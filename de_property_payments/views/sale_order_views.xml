@@ -15,6 +15,8 @@
                 <field name="installment_amount_residual"  string='Installment Due' readonly='1' />
 			</xpath>
             
+            
+            
 		</field>
 	</record>
 	
@@ -22,6 +24,7 @@
 	<record id="view_sale_order_tree_payments" model="ir.ui.view">
 		<field name="name">sale.order.tree.order.pay</field>
 		<field name="model">sale.order</field>
+        
 		<field name="inherit_id" ref="sale.view_order_tree" />
 		<field name="arch" type="xml">            
 			<xpath expr="//field[@name = 'state']" position="before">
