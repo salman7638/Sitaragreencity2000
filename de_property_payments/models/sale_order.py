@@ -118,12 +118,14 @@ class SaleOrder(models.Model):
                 #if pay.type!='fee':
                 total_paid_amount += pay.amount  
             residual_amount = (total_membership_fee + total_processing_fee + line.amount_total) - total_paid_amount
-            tot_booking_amount = (((line.amount_total)/100) * 10) 
-            booking_amount = (((line.amount_total)/100) * 10) - total_paid_amount
-            allotment_amount = (((line.amount_total)/100) * 15)
+            tot_booking_amount = (((line.amount_total)/100) * 10) + total_processing_fee
+            booking_amount = ((((line.amount_total)/100) * 10) + total_processing_fee) - total_paid_amount
+            allotment_amount = (((line.amount_total)/100) * 15) + total_membership_fee
             if booking_amount <=0:
-                allotment_amount = (((line.amount_total)/100) * 15) - (total_paid_amount - tot_booking_amount)
-            advance_amount = (((line.amount_total)/100) * 25)
+                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - tot_booking_amount)
+                
+                
+            advance_amount = (((line.amount_total)/100) * 25)     
             installment_amount = (((line.amount_total)/100) * 75)
             if booking_amount <=0 and allotment_amount<=0: 
                 remaining_amount=total_paid_amount - advance_amount
@@ -140,8 +142,7 @@ class SaleOrder(models.Model):
                 diff_advance_amt = total_paid_amount - advance_amount
                 installment_amount = (((line.amount_total)/100) * 75) - diff_advance_amt
             
-            booking_amount += total_processing_fee
-            allotment_amount += total_membership_fee
+          
             line.update({
                 'amount_paid':  round(total_paid_amount),
                 'amount_residual': round(residual_amount),
