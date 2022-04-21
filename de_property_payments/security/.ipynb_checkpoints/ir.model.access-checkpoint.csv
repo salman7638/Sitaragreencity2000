@@ -5,3 +5,4 @@ access_register_installment_wizard,access.register.installment.wizard,model_regi
 access_plot_resell_wizard,access.plot.resell.wizard,model_plot_resell_wizard,,1,1,1,1
 access_plot_reseller_line,access.plot.reseller.line,model_plot_reseller_line,,1,1,1,1
 access_uniq_plot_resell_wizard,access.uniq.plot.resell.wizard,model_uniq_plot_resell_wizard,,1,1,1,1
+access_uniq_reseller_line,access.uniq.reseller.line,model_uniq_reseller_line,,1,1,1,1
