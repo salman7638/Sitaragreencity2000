@@ -85,6 +85,11 @@ class SaleOrder(models.Model):
     def _compute_property_amount(self):
         for line in self:
             total_paid_amount=0
+            total_processing_fee = 0 
+            total_membership_fee = 0
+            for order_line in line.order_line:
+                total_processing_fee += order_line.product_id.categ_id.process_fee
+                total_membership_fee += order_line.product_id.categ_id.allottment_fee
             residual_amount=0
             if line.amount_residual<=0:
                 for order_line in line.order_line:
@@ -107,16 +112,12 @@ class SaleOrder(models.Model):
                         'order_id': line.id,
                     })
                     
-            total_processing_fee = 0 
-            total_membership_fee = 0
-            for order_line in line.order_line:
-                total_processing_fee += order_line.product_id.categ_id.process_fee
-                total_membership_fee += order_line.product_id.categ_id.allottment_fee        
+                  
             payments = self.env['account.payment'].search([('order_id','=',line.id),('state','in',('draft','posted'))])
             for pay in payments:
                 #if pay.type!='fee':
                 total_paid_amount += pay.amount  
-            residual_amount = line.amount_total - total_paid_amount
+            residual_amount = (total_membership_fee + total_processing_fee + line.amount_total) - total_paid_amount
             tot_booking_amount = (((line.amount_total)/100) * 10) 
             booking_amount = (((line.amount_total)/100) * 10) - total_paid_amount
             allotment_amount = (((line.amount_total)/100) * 15)
@@ -272,7 +273,6 @@ class SaleOrderLine(models.Model):
             commission_amount = line.comission_amount
             if line.commission_type=='percent':
                 commission_amount = (line.price_unit/100) * line.comission_amount    
-            price = price +  line.product_id.categ_id.process_fee + line.product_id.categ_id.allottment_fee
             taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)
             line.update({
                 'processing_fee': line.product_id.categ_id.process_fee,
