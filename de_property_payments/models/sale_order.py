@@ -81,7 +81,7 @@ class SaleOrder(models.Model):
     installment_created=fields.Boolean(string='Installment Generated')
     reseller_ids = fields.One2many('plot.reseller.line', 'order_id', string='Resellers')
     
-    @api.depends('amount_paid','amount_residual','installment_amount_residual','booking_amount_residual','allotment_amount_residual','received_percent')
+    @api.depends('amount_paid', 'amount_residual','installment_amount_residual','booking_amount_residual','allotment_amount_residual','received_percent')
     def _compute_property_amount(self):
         for line in self:
             total_paid_amount=0
@@ -122,9 +122,7 @@ class SaleOrder(models.Model):
             booking_amount = ((((line.amount_total)/100) * 10) + total_processing_fee) - total_paid_amount
             allotment_amount = (((line.amount_total)/100) * 15) + total_membership_fee
             if booking_amount <=0:
-                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - tot_booking_amount)
-                
-                
+                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - tot_booking_amount)   
             advance_amount = (((line.amount_total)/100) * 25)     
             installment_amount = (((line.amount_total)/100) * 75)
             if booking_amount <=0 and allotment_amount<=0: 
@@ -141,8 +139,6 @@ class SaleOrder(models.Model):
             if line.amount_paid > advance_amount:
                 diff_advance_amt = total_paid_amount - advance_amount
                 installment_amount = (((line.amount_total)/100) * 75) - diff_advance_amt
-            
-          
             line.update({
                 'amount_paid':  round(total_paid_amount),
                 'amount_residual': round(residual_amount),
@@ -156,7 +152,37 @@ class SaleOrder(models.Model):
             if line.amount_paid >= ((line.amount_total)/100) * 25:
                 line.received_percent = 25
                 line.action_register_allottment()
+            line.action_assign_discount()    
+            
 
+
+    def action_assign_discount(self):
+        for line in self:
+            total_discount_amount=0
+            for o_line in self.order_line:
+                line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
+                total_discount_amount+=line_discount
+            pending_installment_count=0
+            for installment_count in line.installment_line_ids:
+                if installment_count.remarks == 'Pending':  
+                    pending_installment_count+=1  
+            if total_discount_amount>=0 and pending_installment_count>0 :    
+                for installment in line.installment_line_ids:
+                    if installment.remarks == 'Pending':
+                        installment.update({
+                            'total_amount':  (line.installment_amount_residual/pending_installment_count) ,
+                            'amount_residual': (line.installment_amount_residual/pending_installment_count)  ,
+                        })
+                    
+            if line.booking_amount_residual > 0:  
+                line.update({
+                    'state': 'draft',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'reserved',
+                    }) 
+                        
             
     def action_register_payment(self):
         amount_calc=0
@@ -262,6 +288,35 @@ class SaleOrderLine(models.Model):
         ('amount', 'Amount'),
         ('percent', 'Percentage'),
         ], string='Commission Type', default='amount')   
+   
+     
+   
+    @api.constrains('discount')
+    def _check_discount(self):
+        for line in self:
+            line.order_id.action_assign_discount()
+            if line.order_id.booking_amount_residual > 0:  
+                line.update({
+                    'state': 'draft',
+                })
+                for line_prod in line.order_id.order_line:
+                    line_prod.product_id.update({
+                        'state': 'reserved',
+                    }) 
+            
+            
+    @api.onchange('discount')
+    def onchange_discount(self):
+        for line in self:
+            line.order_id.action_assign_discount()
+            if line.order_id.booking_amount_residual > 0:  
+                line.order_id.update({
+                    'state': 'draft',
+                })
+                for line_prod in line.order_id.order_line:
+                    line_prod.product_id.update({
+                        'state': 'reserved',
+                    })
     
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id','comission_amount','processing_fee','membership_fee')
@@ -282,6 +337,7 @@ class SaleOrderLine(models.Model):
                 'price_total': taxes['total_included'],
                 'price_subtotal': taxes['total_excluded'],
             })
+            
             if self.env.context.get('import_file', False) and not self.env.user.user_has_groups('account.group_account_manager'):
                 line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
     
