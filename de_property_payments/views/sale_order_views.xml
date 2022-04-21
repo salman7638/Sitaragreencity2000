@@ -73,8 +73,8 @@
                 <xpath expr="//field['order_line']//tree//field[@name='price_subtotal']" position="before"> 
                      <field name="commission_type" />
                     <field name="comission_amount" />  
-                    <field name="processing_fee" />
-                    <field name="membership_fee" />
+                    <field name="processing_fee" sum="Total"/>
+                    <field name="membership_fee" sum="Total"/>
                 </xpath>    
                  
                 <xpath expr="//div[@name='button_box']" position="inside">
