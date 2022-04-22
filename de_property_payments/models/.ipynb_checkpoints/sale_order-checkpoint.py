@@ -295,7 +295,7 @@ class SaleOrderLine(models.Model):
             pass
    
     @api.constrains('discount')
-    def _check_discount(self):
+        def _check_discount(self):
         for line in self:
             line.order_id.action_assign_discount()
             if line.order_id.booking_amount_residual > 0:  
