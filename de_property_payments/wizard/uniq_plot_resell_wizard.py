@@ -43,6 +43,18 @@ class UniqPlotResellWizard(models.TransientModel):
         }
         booking = self.env['sale.order'].create(booking_vals)
         for prd_line in self.product_ids:
+            fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('amount','=',prd_line.categ_id.process_fee)] ,limit=1)
+            fee_payment.update({
+               'order_id':booking.id,
+               'partner_id':self.partner_id.id,
+            })
+            membership_fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('amount','=',prd_line.categ_id.allottment_fee)] ,limit=1)
+            membership_fee_payment.update({
+               'order_id':booking.id,
+            })
+            booking.update({
+                'processing_fee_submit':True,
+            })
             prd_line.update({
                 'booking_id': booking.id,
             })

@@ -289,7 +289,10 @@ class SaleOrderLine(models.Model):
         ('percent', 'Percentage'),
         ], string='Commission Type', default='amount')   
    
-     
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed(self):
+        if self._check_line_unlink():
+            pass
    
     @api.constrains('discount')
     def _check_discount(self):
