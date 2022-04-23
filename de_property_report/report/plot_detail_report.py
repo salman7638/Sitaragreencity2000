@@ -169,7 +169,7 @@ class PlotDetailXlS(models.AbstractModel):
             sheet.write(row, col_no, str(round(plt.plot_area_marla,2)), format2) 
             total_plot_area_marla += plt.plot_area_marla
             col_no += 1
-            sheet.write(row, col_no, str(round(plt.list_price,2)), format2) 
+            sheet.write(row, col_no, '{0:,}'.format(int(round(plt.list_price))), format2) 
             total_list_price += plt.list_price
             col_no += 1
             if docs.type in ('reserved', 'booked', 'un_posted_sold'): 
@@ -234,7 +234,7 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, str(remarks), format2)
                 col_no += 1 
                 
-            col_no =2
+            col_no =1
             sr_no += 1
             row += 1
             
@@ -251,7 +251,7 @@ class PlotDetailXlS(models.AbstractModel):
         col_no += 1
         sheet.write(row, col_no, str(round(total_plot_area_marla,2)), header_row_style) 
         col_no += 1
-        sheet.write(row, col_no, str(round(total_list_price,2)), header_row_style) 
+        sheet.write(row, col_no,'{0:,}'.format(int(round(total_list_price))), header_row_style) 
         col_no += 1
         if docs.type in ('reserved', 'booked', 'un_posted_sold'): 
             sheet.write(row, col_no, '{0:,}'.format(int(round(total_adv_amount_received))), header_row_style)
