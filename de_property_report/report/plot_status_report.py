@@ -134,7 +134,7 @@ class PlotStatusXlS(models.AbstractModel):
                         sold_total_number_of_marlas += pl.plot_area_marla
                     if pl.state in ('reserved','booked','un_posted_sold','posted_sold'):
                         all_sold_total_number_of_plots += 1
-                        all_sold_total_number_of_marlas += p1.plot_area_marla  
+                        all_sold_total_number_of_marlas += pl.plot_area_marla  
                 
                 if phase_count==0:
                     sheet.write(row, 0, str(plot_phase.name), format2)
