@@ -233,11 +233,8 @@ class PlotDetailXlS(models.AbstractModel):
                 col_no += 1
                 sheet.write(row, col_no, str(remarks), format2)
                 col_no += 1 
-            if docs.type !='posted_sold':
-                sheet.write(row, col_no, str(plt.property_location_id.location_id.name), format2)
-                col_no += 0
                 
-            col_no =1
+            col_no =2
             sr_no += 1
             row += 1
             
