@@ -165,7 +165,7 @@ class PlotStatusXlS(models.AbstractModel):
                 sheet.write(row, 12, '{0:,}'.format(int(round(sold_total_number_of_plots))), format2)
                 grand_sold_total_number_of_plots += sold_total_number_of_plots
                 sheet.write(row, 13, round(sold_total_number_of_marlas,2), format2)
-                grand_all_sold_total_number_of_marlas += sold_total_number_of_marlas
+                grand_sold_total_number_of_marlas += sold_total_number_of_marlas
                 sheet.write(row, 14, '{0:,}'.format(int(round(all_sold_total_number_of_plots))), format2)
                 grand_all_sold_total_number_of_plots += all_sold_total_number_of_plots
                 sheet.write(row, 15, round(all_sold_total_number_of_marlas,2), format2)
