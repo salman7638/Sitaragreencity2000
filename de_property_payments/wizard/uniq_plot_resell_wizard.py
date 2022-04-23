@@ -4,6 +4,7 @@
 from odoo import api, fields, models, _
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
+from odoo.exceptions import UserError
 
 
 class UniqPlotResellWizard(models.TransientModel):
@@ -52,9 +53,10 @@ class UniqPlotResellWizard(models.TransientModel):
             membership_fee_payment.update({
                'order_id':booking.id,
             })
-            booking.update({
-                'processing_fee_submit':True,
-            })
+            if fee_payment:
+                booking.update({
+                    'processing_fee_submit':True,
+                })
             prd_line.update({
                 'booking_id': booking.id,
             })
@@ -66,11 +68,42 @@ class UniqPlotResellWizard(models.TransientModel):
             }
             booking_line = self.env['sale.order.line'].create(line_vals)             
         payments=self.env['account.payment'].search([('id','in', payment_list)])        
-         
+        batch_journal_list = []
         for pay_line in payments:
+            
+            batch_journal_list.append(pay_line.journal_id.id)
             pay_line.action_draft()
             pay_line.update({
                 'partner_id': self.partner_id.id,
                 'order_id': booking.id,
             })
             pay_line.action_post()
+            
+        batch_journal_list.append(fee_payment.journal_id.id) 
+        payment_list.append(fee_payment.id)
+        batch_journal_list.append(membership_fee_payment.journal_id.id)
+        payment_list.append(membership_fee_payment.id)
+        uniq_batch_journal_list = set(batch_journal_list)
+        
+        for uniq_batch in uniq_batch_journal_list:
+            if uniq_batch!=False:
+                total_b_pay = 0
+                final_payment_list = []
+                batch_pay = self.env['account.payment'].search([('id','in', payment_list),('journal_id','=',uniq_batch)])
+                for b_pay in batch_pay:
+                    final_payment_list.append(b_pay.id)
+                    total_b_pay += b_pay.amount    
+                batch_vals = {
+                    'batch_type': 'inbound',
+                    'journal_id': uniq_batch,
+                    'partner_id':  self.partner_id.id,
+                    'narration':  ' Customer Payments '+ str(total_b_pay) +' - '+ str(self.partner_id.name),  
+                    'order_id': booking.id,
+                    'date': fields.date.today(),
+                    'state': 'reconciled',
+                } 
+                batch=self.env['account.batch.payment'].create(batch_vals)
+                batch.payment_ids=final_payment_list
+                batch.update({
+                   'state': 'reconciled',
+                })
