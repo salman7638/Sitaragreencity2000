@@ -3,7 +3,7 @@
 from odoo import models, fields, api, _
 
 
-class SaleOrder(models.Model):
-    _inherit = 'sale.order'
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
     
-    commission_date = fields.Date(string='Commission Date')
+    commission_date = fields.Date(string="Date")

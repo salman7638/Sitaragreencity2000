@@ -60,8 +60,10 @@ class PlotDetailXlS(models.AbstractModel):
             sheet.write(row, col_no, round(plt.commission_amount,4), format2)
             total_commission += plt.commission_amount
             col_no += 1
-            sheet.write(row, col_no, str(plt.booking_id.commission_date if plt.booking_id.commission_date else ' '), format2)
-            col_no += 1
+            for line in plt.booking_id.order_line:
+                if line.product_id.name == plt.name:
+                    sheet.write(row, col_no, str(line.commission_date if line.commission_date else ' '), format2)
+                    col_no += 1
             
 
             col_no =0
