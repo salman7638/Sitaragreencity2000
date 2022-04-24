@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+    <record id="sale_order_com_form_view" model="ir.ui.view">
+			<field name="name">sale.order.form.view.allotee</field>
+			<field name="model">sale.order</field>
+			<field name="inherit_id" ref="sale.view_order_form"/>
+			<field name="arch" type="xml">
+                
+             <xpath expr="//field[@name='order_line']/tree/field[@name ='comission_amount']" position="before">
+                <field name="commission_date"/>
+            </xpath>
+           </field>
+       </record> 
+  </data>
+</odoo>
