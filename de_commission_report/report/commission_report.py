@@ -47,28 +47,28 @@ class PlotDetailXlS(models.AbstractModel):
         sr_no = 1
         total_commission=0
         for plt in commission_detail:
-            
+            if plt.commission_amount > 0:
                 
-            sheet.write(row, col_no, str(sr_no), format2)
-            col_no += 1
-            sheet.write(row, col_no, str(plt.name), format2)
-            col_no += 1
-            sheet.write(row, col_no, str(plt.partner_id.name if plt.partner_id else ' '), format2)
-            col_no += 1
-            sheet.write(row, col_no, str(plt.booking_id.dealer_id.name if plt.booking_id.dealer_id.name else ' '), format2)
-            col_no += 1
-            sheet.write(row, col_no, round(plt.commission_amount,4), format2)
-            total_commission += plt.commission_amount
-            col_no += 1
-            for line in plt.booking_id.order_line:
-                if line.product_id.name == plt.name:
-                    sheet.write(row, col_no, str(line.commission_date if line.commission_date else ' '), format2)
-                    col_no += 1
-            
+                sheet.write(row, col_no, str(sr_no), format2)
+                col_no += 1
+                sheet.write(row, col_no, str(plt.name), format2)
+                col_no += 1
+                sheet.write(row, col_no, str(plt.partner_id.name if plt.partner_id else ' '), format2)
+                col_no += 1
+                sheet.write(row, col_no, str(plt.booking_id.dealer_id.name if plt.booking_id.dealer_id.name else ' '), format2)
+                col_no += 1
+                sheet.write(row, col_no, round(plt.commission_amount,4), format2)
+                total_commission += plt.commission_amount
+                col_no += 1
+                for line in plt.booking_id.order_line:
+                    if line.product_id.name == plt.name:
+                        sheet.write(row, col_no, str(line.commission_date if line.commission_date else ' '), format2)
+                        col_no += 1
 
-            col_no =0
-            sr_no += 1
-            row += 1
+
+                col_no =0
+                sr_no += 1
+                row += 1
             
             
         sheet.write(row, 0, str(), header_row_style)
