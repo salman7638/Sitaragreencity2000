@@ -135,7 +135,15 @@ class SaleOrder(models.Model):
                for line_prod in line.order_line:
                     line_prod.product_id.update({
                         'state': 'reserved',
-                    })                    
+                    })
+            if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
+                line.update({
+                    'state': 'booked',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'booked',
+                    })                     
             if line.amount_paid > advance_amount:
                 diff_advance_amt = total_paid_amount - advance_amount
                 installment_amount = (((line.amount_total)/100) * 75) - diff_advance_amt
@@ -181,7 +189,15 @@ class SaleOrder(models.Model):
                 for line_prod in line.order_line:
                     line_prod.product_id.update({
                         'state': 'reserved',
-                    }) 
+                    })
+            if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
+                line.update({
+                    'state': 'booked',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'booked',
+                    })  
                         
             
     def action_register_payment(self):
