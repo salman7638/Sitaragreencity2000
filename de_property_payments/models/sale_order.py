@@ -146,10 +146,10 @@ class SaleOrder(models.Model):
                 'allotment_amount_residual': round(allotment_amount if allotment_amount > 0 else 0),
                 'installment_amount_residual':(installment_amount if installment_amount > 0 else 0), 
             })
-            if line.amount_paid >= ((line.amount_total)/100) * 5:
+            if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
                 line.received_percent = 5
                 line.action_confirm_booking()
-            if line.amount_paid >= ((line.amount_total)/100) * 25:
+            if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 25:
                 line.received_percent = 25
                 line.action_register_allottment()
             line.action_assign_discount()    
@@ -229,8 +229,12 @@ class SaleOrder(models.Model):
     
     def action_confirm_booking(self):
         for line in self:
-            
-            if line.amount_paid >= ((line.amount_total)/100) * 5:
+            total_processing_fee = 0 
+            total_membership_fee = 0
+            for order_line in line.order_line:
+                total_processing_fee += order_line.product_id.categ_id.process_fee
+                total_membership_fee += order_line.product_id.categ_id.allottment_fee
+            if line.amount_paid >= ((line.amount_total+total_membership_fee + total_processing_fee)/100) * 5:
                 line.update({
                     'state': 'booked',
                 })
@@ -248,8 +252,12 @@ class SaleOrder(models.Model):
     
     def action_register_allottment(self):
         for line in self:
-            
-            if line.amount_paid >= ((line.amount_total)/100) * 25:
+            total_processing_fee = 0 
+            total_membership_fee = 0
+            for order_line in line.order_line:
+                total_processing_fee += order_line.product_id.categ_id.process_fee
+                total_membership_fee += order_line.product_id.categ_id.allottment_fee
+            if line.amount_paid >= ((line.amount_total+total_membership_fee + total_processing_fee)/100) * 25:
                 line.update({
                     'state': 'sale',
                 })
