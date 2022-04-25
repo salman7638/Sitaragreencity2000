@@ -140,7 +140,7 @@
     <t t-call="web.external_layout">
         <div class="page" style='font-size:12px;'>
             <div class="oe_structure"/>
-             <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
+            <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
                <strong>Printed On:</strong>
                <span  t-esc="datetime.datetime.strptime(str(datetime.datetime.now()+ relativedelta(hours =+ 5)), '%Y-%m-%d %H:%M:%S.%f').strftime('%d-%b-%y %H:%M %p')"/> <br/>
                <strong>Customer Copy</strong>
@@ -148,29 +148,20 @@
             
              <br/>
              <br/>
-            <div class='row'>
-            <div class='col-8'>
+             <br/>
                 <table class='table table-sm'>
                     <tr>
                         <td>DATE              :</td>
                         <td style='text-align:left;'><span t-esc='docs.date_order.strftime("%d-%b-%Y")'/></td>
-                     </tr>
-                    <tr>
+                        </tr>
+                      <tr>
                         <td>ALLOTTEE'S NAME   :</td>
                         <td style='text-align:left;'><span t-esc='docs.partner_id.name'/></td>
-                    </tr>
+                          </tr>
                     <tr>
                         <td >S/O,W/O,D/O      :</td>
                         <td style='text-align:left;'><span t-esc='docs.father_husband_name'/></td>
-                    </tr>                    
-                 </table>  
-            </div>
-            <div class='col-4'>
-                <img t-if="docs.partner_id.image_1920" t-att-src="image_data_uri(docs.partner_id.image_1920)" style="max-height:85pt;max-width:100%" alt="Customer Image"/>
-            </div>    
-           </div> 
-            
-                 <table class='table table-sm'>   
+                    </tr>
                      <tr>
                         <td >CNIC NO.         :</td>
                         <td style='text-align:left;'><span t-esc='docs.nic'/></td>
@@ -206,7 +197,7 @@
                     </tr>
                     </t>
             </table>
-         <table class="table table-sm o_main_table">
+             <table class="table table-sm o_main_table">
                 <!-- In case we want to repeat the header, remove "display: table-row-group" -->
                 <thead style="display: table-row-group">
                     <tr style="background-color:#000000;color:#ffffff">
@@ -265,6 +256,10 @@
                       <td><b> CNIC NO:________________________ </b>  </td>
                   </tr>
                    </table>
+                    
+        
+                    
+           
           </div>
     </t>
     </t>

@@ -52,18 +52,16 @@ class PlotDetailXlS(models.AbstractModel):
         sheet.set_column(10, 10, 20)   
         sheet.set_column(11, 11, 20)   
         sheet.set_column(12, 12, 20)   
-        sheet.set_column(13, 13, 20) 
-        sheet.set_column(14, 14, 20) 
-        sheet.set_column(15, 15, 30)   
+        sheet.set_column(13, 13, 20)   
         plots_detail = self.env['product.product'].search([]) 
         if docs.type=='available': 
             plots_detail = self.env['product.product'].search([('state','=','available')])
         if docs.type=='unconfirm': 
             plots_detail = self.env['product.product'].search([('state','=','unconfirm')])    
         if docs.type=='reserved': 
-            plots_detail = self.env['product.product'].search([('state','=','reserved'),('booking_validity','!=',False)]) 
+            plots_detail = self.env['product.product'].search([('state','=','reserved')]) 
         if docs.type=='booked': 
-            plots_detail = self.env['product.product'].search([('state','=','booked'),('date_validity','!=',False)])
+            plots_detail = self.env['product.product'].search([('state','=','booked')])
         if docs.type=='un_posted_sold': 
             plots_detail = self.env['product.product'].search([('state','in', ('un_posted_sold', 'posted_sold'))])
         if docs.type=='posted_sold': 
@@ -75,11 +73,7 @@ class PlotDetailXlS(models.AbstractModel):
         col_no += 1  
         if docs.type!='available': 
             sheet.write(2, col_no, 'NAME OF BUYER',header_row_style)
-            col_no += 1 
-            sheet.write(2, col_no, 'PHONE OF BUYER',header_row_style)
-            col_no += 1 
-            sheet.write(2, col_no, 'MOBILE OF BUYER',header_row_style)
-            col_no += 1 
+            col_no += 1  
         sheet.write(2, col_no, 'PLOT NO.',header_row_style)
         col_no += 1  
         sheet.write(2, col_no, "CATEGORY",header_row_style)
@@ -110,10 +104,6 @@ class PlotDetailXlS(models.AbstractModel):
             col_no += 1
             sheet.write(2, col_no, "OVERDUE DAYS",header_row_style)
             col_no += 1
-            sheet.write(2, col_no, "Due Date",header_row_style)
-            col_no += 1
-            sheet.write(2, col_no, "REMARKS",header_row_style)
-            col_no += 1
             
         col_no = 0  
         
@@ -132,7 +122,7 @@ class PlotDetailXlS(models.AbstractModel):
             amt_percent_received=0
             for amt_receive in plt.payment_ids:
                 adv_amount_received += amt_receive.amount
-            amt_percent_received =  (adv_amount_received/plt.list_price if plt.list_price>0 else 1) * 100 
+            amt_percent_received =  (adv_amount_received/plt.list_price) * 100 
             sheet.write(row, col_no, str(sr_no), format2)
             col_no += 1 
             plot_status=''
@@ -145,7 +135,7 @@ class PlotDetailXlS(models.AbstractModel):
             elif plt.state=='booked':
                 plot_status='Booked'
             elif plt.state=='un_posted_sold':
-                plot_status='Alloted'
+                plot_status='Un-Posted Sold'
             elif plt.state=='posted_sold':
                 plot_status='Posted Sold'
                 
@@ -153,10 +143,6 @@ class PlotDetailXlS(models.AbstractModel):
             col_no += 1
             if docs.type!='available': 
                 sheet.write(row, col_no, str(plt.partner_id.name if plt.partner_id else ' '), format2)
-                col_no += 1
-                sheet.write(row, col_no, str(plt.partner_id.phone if plt.partner_id.phone else ' '), format2)
-                col_no += 1
-                sheet.write(row, col_no, str(plt.partner_id.mobile if plt.partner_id.mobile else ' '), format2)
                 col_no += 1
             sheet.write(row, col_no, str(plt.name), format2)
             col_no += 1
@@ -190,28 +176,17 @@ class PlotDetailXlS(models.AbstractModel):
                 col_no += 1
                 overdue_days = 0
                 overdue_days_amount = 0
-                remarks = ''
-                due_date_report= ''
-                if plt.booking_validity:
-                    if plt.state=='reserved' and fields.date.today() > plt.booking_validity:
-                        overdue_days = (fields.date.today() - plt.booking_validity).days
-                        overdue_days_amount = plt.booking_amount - plt.amount_paid
-                        due_date_report = plt.booking_validity
-                        remarks = 'Booking Amount Overdue'
-                if plt.date_validity:
-                    if plt.state=='booked' and fields.date.today() > plt.date_validity:
-                        overdue_days = (fields.date.today() - plt.date_validity).days
-                        overdue_days_amount = (plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
-                        due_date_report = plt.date_validity 
-                        remarks = 'Allotment Amount Overdue'
+                if plt.state=='reserved' and fields.date.today() > plt.booking_validity:
+                    overdue_days = (fields.date.today() - plt.booking_validity).days
+                    overdue_days_amount = plt.booking_amount - plt.amount_paid
+                if plt.state=='booked' and fields.date.today() > plt.date_validity:
+                    overdue_days = (fields.date.today() - plt.date_validity).days
+                    overdue_days_amount = (plt.allottment_amount + plt.booking_amount) - plt.amount_paid                     
                 if plt.booking_id.state=='sale':
                     for installment in plt.booking_id.installment_line_ids:
                         if fields.date.today() > installment.date and installment.remarks != 'Paid':
                             overdue_days = (fields.date.today() - installment.date).days
-                            overdue_days_amount = installment.amount_residual - installment.amount_paid
-                            due_date_report = installment.date
-                            remarks = installment.name  
-                                
+                            overdue_days_amount = installment.amount_residual - installment.amount_paid     
                     
                 sheet.write(row, col_no, '{0:,}'.format(int(round(overdue_days_amount))), format2)
                 total_overdue_days_amount +=  overdue_days_amount
@@ -219,10 +194,6 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, '{0:,}'.format(int(round(overdue_days))), format2)
                 total_overdue_days += overdue_days
                 col_no += 1
-                sheet.write(row, col_no, str(due_date_report), format2)
-                col_no += 1
-                sheet.write(row, col_no, str(remarks), format2)
-                col_no += 1 
             if docs.type !='posted_sold':
                 sheet.write(row, col_no, str(plt.property_location_id.location_id.name), format2)
                 col_no += 0
@@ -234,8 +205,6 @@ class PlotDetailXlS(models.AbstractModel):
         sheet.write(row, col_no, str(), header_row_style)
         col_no += 1
         if docs.type!='available': 
-            sheet.write(row, col_no, str(), header_row_style)
-            col_no += 1
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 1
         sheet.write(row, col_no, str(), header_row_style)
@@ -267,7 +236,6 @@ class PlotDetailXlS(models.AbstractModel):
             col_no += 1
             sheet.write(row, col_no, '{0:,}'.format(int(round(total_overdue_days))), header_row_style)
             col_no += 1
-            
         if docs.type !='posted_sold':
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 0    
