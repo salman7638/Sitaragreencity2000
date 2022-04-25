@@ -165,43 +165,44 @@ class SaleOrder(models.Model):
 
 
     def action_assign_discount(self):
-        for line in self:
-            total_discount_amount=0
-            for o_line in self.order_line:
-                line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
-                total_discount_amount+=line_discount
-            pending_installment_count=0
-            for installment_count in line.installment_line_ids:
-                if installment_count.remarks == 'Pending':  
-                    pending_installment_count+=1  
-            if total_discount_amount>=0 and pending_installment_count>0 :    
-                for installment in line.installment_line_ids:
-                    if installment.remarks == 'Pending':
-                        installment.update({
-                            'total_amount':  (line.installment_amount_residual/pending_installment_count) ,
-                            'amount_residual': (line.installment_amount_residual/pending_installment_count)  ,
-                        })
-            total_processing_fee = 0 
-            total_membership_fee = 0
-            for order_line in line.order_line:
-                total_processing_fee += order_line.product_id.categ_id.process_fee
-                total_membership_fee += order_line.product_id.categ_id.allottment_fee        
-            if line.booking_amount_residual < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:  
-                line.update({
-                    'state': 'draft',
-                })
-                for line_prod in line.order_line:
-                    line_prod.product_id.update({
-                        'state': 'reserved',
-                    })
-            if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
-                line.update({
-                    'state': 'booked',
-                })
-                for line_prod in line.order_line:
-                    line_prod.product_id.update({
-                        'state': 'booked',
-                    })  
+        pass
+#         for line in self:
+#             total_discount_amount=0
+#             for o_line in self.order_line:
+#                 line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
+#                 total_discount_amount+=line_discount
+#             pending_installment_count=0
+#             for installment_count in line.installment_line_ids:
+#                 if installment_count.remarks == 'Pending':  
+#                     pending_installment_count+=1  
+#             if total_discount_amount>=0 and pending_installment_count>0 :    
+#                 for installment in line.installment_line_ids:
+#                     if installment.remarks == 'Pending':
+#                         installment.update({
+#                             'total_amount':  (line.installment_amount_residual/pending_installment_count) ,
+#                             'amount_residual': (line.installment_amount_residual/pending_installment_count)  ,
+#                         })
+#             total_processing_fee = 0 
+#             total_membership_fee = 0
+#             for order_line in line.order_line:
+#                 total_processing_fee += order_line.product_id.categ_id.process_fee
+#                 total_membership_fee += order_line.product_id.categ_id.allottment_fee        
+#             if line.booking_amount_residual < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:  
+#                 line.update({
+#                     'state': 'draft',
+#                 })
+#                 for line_prod in line.order_line:
+#                     line_prod.product_id.update({
+#                         'state': 'reserved',
+#                     })
+#             if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
+#                 line.update({
+#                     'state': 'booked',
+#                 })
+#                 for line_prod in line.order_line:
+#                     line_prod.product_id.update({
+#                         'state': 'booked',
+#                     })  
                         
             
     def action_register_payment(self):
