@@ -19,11 +19,11 @@
 			<field name="model">sale.order</field>
 			<field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
-				<xpath expr="//field[@name='date']" position="after">
-                    <field name="fine_amount"  />
-				</xpath>
-				
+				<xpath expr="//field[@name='payment_date']" position="after">
+                    <field name="fine_amount"/>
+                </xpath>
 			</field>
 	</record>
     
+
 </odoo>
