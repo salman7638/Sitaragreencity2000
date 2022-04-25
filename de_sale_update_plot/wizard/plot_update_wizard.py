@@ -27,8 +27,8 @@ class PlotUpdateWizard(models.TransientModel):
             if o_line.product_id.id==self.plot_id.id:
                 o_line.update({
                     'product_id': self.plot_update_id.id,
-#                     'size': self.plot_update_id.size,
-#                     'unit_price': self.plot_update_id.list_price,
+                    'name': self.plot_update_id.name,
+                    'price_unit': self.plot_update_id.list_price,
                     
                 })
                 

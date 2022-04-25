@@ -21,16 +21,14 @@ class PlotUpdateWizard(models.TransientModel):
         
         self.plot_update_id.payment_ids = self.plot_id.payment_ids.ids
         self.plot_id.payment_ids = False
-       
-        
         
         
         for o_line in self.plot_id.booking_id.order_line:
             if o_line.product_id.id==self.plot_id.id:
                 o_line.update({
                     'product_id': self.plot_update_id.id,
-#                     'size': self.plot_update_id.size,
-#                     'unit_price': self.plot_update_id.list_price,
+                    'name': self.plot_update_id.name,
+                    'price_unit': self.plot_update_id.list_price,
                     
                 })
                 
