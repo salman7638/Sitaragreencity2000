@@ -55,13 +55,18 @@
                         <td >Phone #</td>
                         <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.partner_id.phone'/></td>
                     </tr>
-                        <t t-foreach="docs.order_id.order_line" t-as="line">
-                    <tr>
-                        <td >Plot NO.</td>
-                        <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='line.product_id.name'/></td>
-                    </tr>
-                            
+                         <t t-foreach="docs.order_id.order_line" t-as="pro">
+                                <t t-foreach="pro.product_id.payment_ids" t-as="poo">
+                                     <t t-if="poo.name==docs.name">
+                                         <tr>
+                                             <td >Plot NO.</td>
+                                             <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='pro.product_id.name'/></td>
+                                         </tr>
+                                    </t>
+                            </t>
                         </t>
+                               
+                    
                      <tr>
                         <td >Amount(In Figures):</td>
                         <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.amount'/></td>
@@ -80,11 +85,15 @@
                               <td >Email:</td>
                               <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.partner_id.email'/></td>
                          </tr>
-                               <t t-foreach="docs.order_id.order_line" t-as="line">
+                              <t t-foreach="docs.order_id.order_line" t-as="pr">
+                                <t t-foreach="pr.product_id.payment_ids" t-as="po">
+                                     <t t-if="po.name==docs.name">
                          <tr>
                               <td >Residential/Commerical:</td>
-                              <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='line.plot_type'/></td>
+                          <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='pr.plot_type'/></td>
                          </tr>
+                                    </t>
+                                  </t>
                              </t>
                          </table>
                      </div>
@@ -133,8 +142,8 @@
                       <table class='table table-sm'>
 <!--                           <t t-foreach="docs.order_id.installment_line_ids" t-as="line"> -->
                      <tr>
-                        <td >Installment NO:</td>
-                        <td style='border-bottom:1px solid black;text-align:center;'><span string="1"/></td>
+                        <td >Payment Type:</td>
+                        <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.type'/></td>
                     </tr>
 <!--                           </t> -->
                     </table>
@@ -142,8 +151,8 @@
                 <div class='col-4'>
                     <table class='table table-sm'>
                      <tr>
-                        <td >Installmemt Amount:</td>
-                        <td style='border-bottom:1px solid black;text-align:center;'><span string="1"/></td>
+                        <td >Payment Amount:</td>
+                        <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.amount'/></td>
                     </tr>
                     </table>
                 </div>
@@ -197,12 +206,24 @@
         
                     
              <br/>
+            
+            <br/>
+            <br/>
             <br/>
              <br/>
-           <p> &#160; &#160;Accounts Department    &#160; &#160; &#160; &#160;  &#160;&#160;&#160; &#160; &#160; &#160; &#160; &#160; &#160;&#160;&#160; &#160; &#160; &#160; &#160;&#160;&#160; &#160; &#160; &#160; &#160;&#160;&#160;     Customer Signature  &#160; &#160; &#160; &#160;  &#160; &#160;&#160; &#160; &#160; &#160; &#160; &#160;&#160;&#160; &#160; &#160; &#160; &#160;&#160;&#160; &#160; &#160; &#160; &#160;&#160;&#160; Authorzed By</p>
-                    <br/>
-           
-           
+            <div class="row">
+                <div class='col-4'>
+                    <p style='border-top:1px solid black;text-align:center;'>Accounts Department</p>
+                </div>
+                <div class='col-4'>
+                    <p style='border-top:1px solid black;text-align:center;'> Customer Signature</p>
+                </div>
+                <div class='col-4'>
+                    <p style='border-top:1px solid black;text-align:center;'> Authorzed By</p>
+                </div>
+            </div>
+
+           <br/>
              <p>Note: This Receipt will be considered as valid subject to the realization of Cheque/PO/DD</p>             
            
           </div>
