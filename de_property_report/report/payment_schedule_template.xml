@@ -98,6 +98,7 @@
                 <tbody class="sale_tbody">
                     <tr>
                         <td> Advance Payment</td>
+                         <td></td>
                         <td> <span t-esc="'{0:,}'.format(int(round((docs.amount_total/100)*25)))"/> </td>
                         <td> <span t-esc="'{0:,}'.format(int(round((docs.amount_total/100)*25 - docs.booking_amount_residual - docs.allotment_amount_residual)))"/> </td>
                     </tr>
