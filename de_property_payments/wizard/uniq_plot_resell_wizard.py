@@ -103,6 +103,9 @@ class UniqPlotResellWizard(models.TransientModel):
                     'state': 'reconciled',
                 } 
                 batch=self.env['account.batch.payment'].create(batch_vals)
+                batch.update({
+                    'state': 'reconciled',
+                })
                 batch.payment_ids=final_payment_list
                 batch.update({
                    'state': 'reconciled',

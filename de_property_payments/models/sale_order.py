@@ -122,7 +122,7 @@ class SaleOrder(models.Model):
             booking_amount = ((((line.amount_total)/100) * 10) + total_processing_fee) - total_paid_amount
             allotment_amount = (((line.amount_total)/100) * 15) + total_membership_fee
             if booking_amount <=0:
-                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - tot_booking_amount)   
+                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - (tot_booking_amount))   
             advance_amount = (((line.amount_total)/100) * 25)     
             installment_amount = (((line.amount_total)/100) * 75)
             if booking_amount <=0 and allotment_amount<=0: 
@@ -146,17 +146,24 @@ class SaleOrder(models.Model):
                 line.received_percent = 25
                 line.action_register_allottment()
             line.action_assign_discount() 
-   
-
-
-            if line.booking_amount_residual < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:
-               line.update({
+            
+            if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
+                line.update({
+                   'state': 'booked',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'booked',
+                    }) 
+            if line.booking_amount_residual > 0 and line.amount_paid < ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
+                line.update({
                    'state': 'draft',
-               })
-               for line_prod in line.order_line:
+                })
+                for line_prod in line.order_line:
                     line_prod.product_id.update({
                         'state': 'reserved',
                     })
+                    
             if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
                 line.update({
                     'state': 'booked',
