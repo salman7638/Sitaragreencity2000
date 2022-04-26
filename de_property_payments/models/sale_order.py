@@ -126,9 +126,9 @@ class SaleOrder(models.Model):
             advance_amount = (((line.amount_total)/100) * 25)     
             installment_amount = (((line.amount_total)/100) * 75)
             if booking_amount <=0 and allotment_amount<=0: 
-                remaining_amount=total_paid_amount - advance_amount
-                installment_amount = (((line.amount_total)/100) * 75) - (total_paid_amount - advance_amount)
-            if booking_amount < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:
+                remaining_amount=total_paid_amount - (advance_amount + total_processing_fee + total_membership_fee)
+                installment_amount = (((line.amount_total)/100) * 75) -(remaining_amount)
+            if booking_amount < ((line.amount_total + total_processing_fee)/100) * 5:
                line.update({
                    'state': 'draft',
                })
@@ -146,7 +146,7 @@ class SaleOrder(models.Model):
                     })                     
             if line.amount_paid > advance_amount:
                 diff_advance_amt = total_paid_amount - advance_amount
-                installment_amount = (((line.amount_total)/100) * 75) - diff_advance_amt
+                installment_amount = (((line.amount_total)/100 ) * 75) - diff_advance_amt 
             line.update({
                 'amount_paid':  round(total_paid_amount),
                 'amount_residual': round(residual_amount),
