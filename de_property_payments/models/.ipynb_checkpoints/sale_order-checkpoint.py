@@ -171,7 +171,15 @@ class SaleOrder(models.Model):
                 for line_prod in line.order_line:
                     line_prod.product_id.update({
                         'state': 'booked',
-                    })   
+                    })
+            if line.allotment_amount_residual <= 0:  
+                line.update({
+                    'state': 'sale',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'un_posted_sold',
+                    })        
 
 
     def action_assign_discount(self):
