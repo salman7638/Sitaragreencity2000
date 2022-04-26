@@ -44,8 +44,8 @@
         'report/payment_schedule_template.xml',
         'report/payment_report.xml',
         'report/payment_template.xml',
-        'report/payment_recipt_report.xml',
-        'report/payment_recipt_template.xml',
+#         'report/payment_recipt_report.xml',
+#         'report/payment_recipt_template.xml',
         'views/product_category_views.xml',
         
     ],
