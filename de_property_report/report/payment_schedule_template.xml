@@ -81,6 +81,11 @@
                      <font class="text-white">INSTALLMENTS</font>
                    </span>
                 </th>
+                <th>
+                   <span>
+                     <font class="text-white">Due Date</font>
+                   </span>
+                </th>
                 <th style="color:#ffffff">
                    <span>AMOUNT</span>
                 </th>
@@ -99,6 +104,7 @@
                       <t t-foreach="docs.installment_line_ids" t-as="line">
                         <tr>
                             <td ><span t-field="line.name"/></td>
+                            <td ><span t-field="line.date"/></td>
                             <td ><span t-esc="'{0:,}'.format(int(round(line.total_amount)))"/></td>
                             <td ><span t-esc="'{0:,}'.format(int(round(line.amount_paid)))"/></td>
                              
