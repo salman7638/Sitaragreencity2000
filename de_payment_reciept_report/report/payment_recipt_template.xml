@@ -148,7 +148,22 @@
 <!--                           <t t-foreach="docs.order_id.installment_line_ids" t-as="line"> -->
                      <tr>
                         <td >Payment Type:</td>
-                        <td style='border-bottom:1px solid black;text-align:center;'><span t-esc='docs.type'/></td>
+                        <td style='border-bottom:1px solid black;text-align:center;'>
+                            
+                            <t t-if="docs.type=='token'">
+                                <span>Token</span>
+                            </t>
+                            <t t-if="docs.type=='book'">
+                                <span>Booking</span>
+                            </t>
+                            <t t-if="docs.type=='allott'">
+                                <span>Allottment</span>
+                            </t>
+
+                            <t t-if="docs.type=='installment'">
+                                <span>Installment</span>
+                            </t>
+                         </td>
                     </tr>
 <!--                           </t> -->
                     </table>
