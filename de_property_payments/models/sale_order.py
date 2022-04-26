@@ -131,7 +131,8 @@ class SaleOrder(models.Model):
                                  
             if line.amount_paid > advance_amount:
                 diff_advance_amt = total_paid_amount - advance_amount
-                installment_amount = (((line.amount_total)/100 ) * 75) - diff_advance_amt 
+                remaining_amount = total_paid_amount - (advance_amount + total_processing_fee + total_membership_fee)
+                installment_amount = (((line.amount_total)/100 ) * 75) - remaining_amount 
             line.update({
                 'amount_paid':  round(total_paid_amount),
                 'amount_residual': round(residual_amount),
@@ -146,7 +147,7 @@ class SaleOrder(models.Model):
                 line.received_percent = 25
                 line.action_register_allottment()
             line.action_assign_discount()    
-            if booking_amount < ((line.amount_total + total_processing_fee)/100) * 5:
+            if line.booking_amount_residual < ((line.amount_total + total_processing_fee)/100) * 5:
                line.update({
                    'state': 'draft',
                })
