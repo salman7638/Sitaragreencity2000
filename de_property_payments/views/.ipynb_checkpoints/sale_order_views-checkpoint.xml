@@ -97,7 +97,8 @@
                             <field name="payment_date" readonly='1' /> 
                             <field name="total_amount" readonly='1' /> 
                             <field name="amount_paid" readonly='1'/>  
-                            <field name="amount_residual" readonly='1'/>   
+                            <field name="amount_residual" readonly='1'/>
+                            <field name="total_actual_amount" invisible='1' /> 
                             <field name="remarks" readonly='1'/>   
                             <field name="order_id" invisible='1' />  
                             <field name="is_discount_ded" invisible='1' />   

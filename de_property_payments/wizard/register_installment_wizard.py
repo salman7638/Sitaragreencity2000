@@ -28,6 +28,7 @@ class RegisterInstallmentWizard(models.TransientModel):
                 'amount_paid':   0,
                 'order_id': self.sale_id.id,
                 'total_amount':  (self.sale_id.installment_amount_residual/self.number_of_installment),
+                'total_actual_amount': (self.sale_id.installment_amount_residual/self.number_of_installment),
                 'amount_residual':  (self.sale_id.installment_amount_residual/self.number_of_installment) ,
                 'remarks': 'Pending',
             }
