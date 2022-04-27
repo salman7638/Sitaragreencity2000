@@ -20,4 +20,14 @@ class SaleOrderLine(models.Model):
             else:
                 line.co_amount = 0
                 
-                
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+    
+    adv_amount = fields.Float(string = "25% Amount Due", compute ='_adv_amount' )
+    
+    @api.depends("booking_amount_residual","allotment_amount_residual")
+    def _adv_amount(self):
+        for line in self:
+            line.adv_amount = line.booking_amount_residual + line.allotment_amount_residual
+    
+    
