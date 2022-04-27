@@ -22,7 +22,7 @@
 <!--                 <field name="dealer_id" wedgit="many2one_tags"/> -->
 <!--                 <field name="dealers" string="Dealers" invisible="1"/> -->
                 <field name="dealer_id" string="Dealer" 
-                attrs="{'readonly':[('state','not in',['draft','sent'])]}"
+                attrs="{'readonly':[('state','not in',['draft','sent','booked','sale'])]}"
                 options="{'no_create': True, 'no_create_edit':True}"/>
 			</xpath>
 			
