@@ -176,6 +176,9 @@
                 <th style="color:#ffffff">
                    <span>Amount Received</span>
                 </th>
+                <th style="color:#ffffff">
+                   <span>Due Amount</span>
+                </th>
                     </tr>
                 </thead>
                 
@@ -184,15 +187,22 @@
                         <td>10% Booking</td>
                         <td></td>
                           <t t-set="total_process" t-value="0" />
+                           <t t-set="total_amu" t-value="0" />
+                        <t t-set="total_amu_recieved" t-value="0" />
                               <t t-foreach="docs.order_line" t-as="pros">
                               <t t-set='total_process' t-value="total_process + pros.processing_fee"/>
                             </t>
                           <td> 
                               <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*10)+total_process)))"/>
+                               <t t-set="total_amu" t-value="(((docs.amount_total/100)*10)+total_process)" />
                         </td>
                     
                         <td>
                             <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*10)+total_process)-docs.booking_amount_residual))"/>
+                            <t t-set="total_amu_recieved" t-value="((((docs.amount_total/100)*10)+total_process)-docs.booking_amount_residual)" />
+                        </td>
+                        <td>
+                            <span t-esc="'{0:,}'.format(int(round(total_amu - total_amu_recieved)))"/>
                         </td>
                         
                     </tr>
@@ -201,16 +211,23 @@
                     <tr>
                         <td>15% Allotment</td>
                         <td></td>
+                       <t t-set="total_amu" t-value="0" />
+                        <t t-set="total_amu_recieved" t-value="0" />
                           <t t-set="total_membership" t-value="0" />
                               <t t-foreach="docs.order_line" t-as="proc">
                               <t t-set='total_membership' t-value="total_membership + proc.membership_fee"/>
                             </t>
                           <td> 
                               <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*15)+total_membership)))"/>
+                               <t t-set="total_amu" t-value="(((docs.amount_total/100)*15)+total_membership)" />
                         </td>
                     
                         <td>
                             <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*15)+total_membership)-docs.allotment_amount_residual))"/>
+                            <t t-set="total_amu_recieved" t-value="((((docs.amount_total/100)*15)+total_membership)-docs.allotment_amount_residual)" />
+                        </td>
+                        <td>
+                            <span t-esc="'{0:,}'.format(int(round(total_amu - total_amu_recieved)))"/>
                         </td>
                         
                     </tr>
@@ -219,14 +236,23 @@
                     <tr>
                         <td>Total 25% Advance Payment</td>
                          <td></td>
+                        <t t-set="total_amu" t-value="0" />
+                        <t t-set="total_amu_recieved" t-value="0" />
                           <t t-set="total_process" t-value="0" />
                             <t t-set="total_membership" t-value="0" />
                           <t t-foreach="docs.order_line" t-as="pro">
                            <t t-set='total_process' t-value="total_process + pro.processing_fee"/>
                             <t t-set="total_membership" t-value="total_membership + pro.membership_fee"/>
                         </t>
-                                <td> <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*25)+total_process + total_membership)))"/> </td>
-                                <td> <span t-esc="'{0:,}'.format(int(round((((docs.amount_total/100)*25)+total_process + total_membership) - docs.booking_amount_residual - docs.allotment_amount_residual)))"/> </td>
+                                <td> <span t-esc="'{0:,}'.format(int(round(((docs.amount_total/100)*25)+total_process + total_membership)))"/> 
+                                    <t t-set="total_amu" t-value="(((docs.amount_total/100)*25)+total_process + total_membership)" />
+                        </td>
+                                <td> <span t-esc="'{0:,}'.format(int(round((((docs.amount_total/100)*25)+total_process + total_membership) - docs.booking_amount_residual - docs.allotment_amount_residual)))"/> 
+                        <t t-set="total_amu_recieved" t-value="((((docs.amount_total/100)*25)+total_process + total_membership) - docs.booking_amount_residual - docs.allotment_amount_residual)" />
+                        </td>
+                        <td>
+                            <span t-esc="'{0:,}'.format(int(round(total_amu - total_amu_recieved)))"/>
+                        </td>
                         
                     </tr>
                       <t t-foreach="docs.installment_line_ids" t-as="line">
@@ -236,6 +262,8 @@
                             <td ><span t-field="line.date"/></td>
                             <td ><span t-esc="'{0:,}'.format(int(round(line.total_amount)))"/></td>
                             <td ><span t-esc="'{0:,}'.format(int(round(line.amount_paid)))"/></td>
+                             <td ><span t-esc="'{0:,}'.format(int(round(line.total_amount - line.amount_paid)))"/></td>
+                            
                              
                            </tr> 
                          </t>
