@@ -144,7 +144,7 @@ class SaleOrder(models.Model):
             if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 25:
                 line.received_percent = 25
                 line.action_register_allottment()
-            line.action_assign_discount() 
+             
             
             if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
                 line.update({
