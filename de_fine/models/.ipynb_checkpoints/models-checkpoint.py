@@ -13,11 +13,17 @@ class productProduct(models.Model):
 class OrderInstallmentLine(models.Model):
     _inherit = "order.installment.line"
     
-    fine_amount = fields.Float(string="Fine Amount", compute='_compute_fine_amount')
+    fine_amount = fields.Float(string="Fine Amount", compute='_compute_fine_amount', store='true')
     
-    @api.depends("date","total_amount","amount_residual")
+    @api.depends("date","total_amount","amount_residual","fine_amount")
     def _compute_fine_amount(self):
         for line in self:
+            if line.date > date.today():
+                amu = line.total_amount - line.fine_amount
+                line.total_amount =  amu
+                amount_res =  line.amount_residual - line.fine_amount 
+                line.amount_residual = amount_res
+                
             today_date = date.today()
             if today_date > line.date:
                 fine_days=0
@@ -25,16 +31,24 @@ class OrderInstallmentLine(models.Model):
                 l_date =line.date
                 delta = f_date - l_date
                 fine_days=delta.days
-                line.fine_amount=(((((line.total_amount/100)*1)/365)*12)*fine_days) 
+                line.fine_amount=(((((line.total_amount/100)*1)/365)*12)*fine_days)
             else:
-                line.total_amount = line.total_amount - line.fine_amount
                 line.fine_amount=0
                 
             if line.fine_amount > 0 and line.remarks=='Pending':
                 line.total_amount= line.fine_amount + line.total_amount
                 line.amount_residual= line.fine_amount + line.amount_residual
-            elif line.fine_amount == 0:
-                line.total_amount
+                
+              
+                
+#                 total_amo = line.fine_amount + line.total_amount
+#                 amu_residual =  line.fine_amount + line.amount_residual
+  
+                
+#             elif line.date > date.today():
+#                 line.total_amount = total_amo - line.fine_amount
+#                 line.amount_residual= amu_residual - line.fine_amount
+                
               
                 
                 
