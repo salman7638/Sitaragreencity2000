@@ -238,6 +238,7 @@ class OPPropertylocation(models.Model):
     comment = fields.Html('Additional Information')
     sequence = fields.Integer(string='Sequence', default=1)
     phase_location = fields.Boolean(string='Phase Location')
+    marla_price = fields.Float(string='Marla Price')
     
     @api.depends('name', 'location_id.complete_name')
     def _compute_complete_name(self):
