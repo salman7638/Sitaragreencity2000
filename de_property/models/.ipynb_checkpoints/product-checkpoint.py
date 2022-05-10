@@ -45,7 +45,7 @@ class ProductTemplate(models.Model):
             'context': {'default_product_ids': selected_records.ids,
                         'default_partner_id': self.partner_id.id,
                         'default_date_reservation': self.booking_validity,
-                        'default_date_validity': self.date_validity,
+                       
                        },
         }
     
@@ -111,6 +111,8 @@ class ProductTemplate(models.Model):
     installment_amount = fields.Float(string='Installment Amount')
     partner_id = fields.Many2one('res.partner', string='Dealer/Customer')
     cnic = fields.Char(string='CNIC')
+    phone = fields.Char(string='Phone')
+    mobile = fields.Char(string='Mobile')
     booking_id = fields.Many2one('sale.order', string='Booking')
     partner_role = fields.Char( string='Role')
     state = fields.Selection(selection=[
@@ -129,6 +131,7 @@ class ProductTemplate(models.Model):
     date_reservation = fields.Date(string='Date of Reservation')
     booking_validity = fields.Date(string='Booking Validity')
     date_validity = fields.Date(string='Date Validity')
+    token_validity = fields.Date(string='Token Validity') 
     
     
     
@@ -140,7 +143,7 @@ class ProductTemplate(models.Model):
 #             order=self.env['sale.order'].create(vals)
     
     
-    @api.depends('amount_paid', 'amount_residual', 'list_price','commission_amount','discount_amount')
+    @api.depends('amount_paid', 'amount_residual', 'list_price','commission_amount','discount_amount','partner_id.nic','partner_id.phone')
     def compute_amount_total(self):
         for line in self:
             amount_paid = 0
@@ -153,6 +156,10 @@ class ProductTemplate(models.Model):
                 amount_residual=0
             line.amount_paid = amount_paid
             line.amount_residual = amount_residual
+            line.cnic = line.partner_id.nic
+            line.phone = line.partner_id.phone
+            line.mobile = line.partner_id.mobile
+            
 
     
 
@@ -173,12 +180,12 @@ class ProductTemplate(models.Model):
     def _compute_sum(self):
         for line in self:
             if float(line.plot_area_marla) > 0.0 and float(line.plot_file) > 0.0:
-                total_amount = float(line.plot_area_marla) * float(line.plot_file)
+                total_amount = round(float(line.plot_area_marla),2) * round(float(line.plot_file),2)
                 line.list_price = round(total_amount + (line.property_amenities_id.percent * (total_amount / 100)))
             else:
                 line.list_price=0
-            line.booking_amount= round(((line.list_price-line.discount_amount)/100)*10) 
-            line.allottment_amount= round(((line.list_price-line.discount_amount)/100)*15)
+            line.booking_amount= round(((((line.list_price-line.discount_amount)/100)*10)))
+            line.allottment_amount= round(((((line.list_price-line.discount_amount)/100)*15))) 
             line.installment_amount=round(((line.list_price-line.discount_amount)/100)*75)
             
     can_be_property = fields.Boolean(string="Can be Property", compute='_compute_can_be_property',
@@ -194,7 +201,7 @@ class ProductTemplate(models.Model):
     plot_type = fields.Selection([
         ('plot file', 'Plot File')
     ], default='plot file')
-    plot_file = fields.Float(string="Rate Per Marla")
+    plot_file = fields.Float(string="Rate Per Marla", compute='_compute_rate_per_marla')
     property_amenities_id = fields.Many2one("op.property.amenities", string="Amenities")
     property_unit_feature_group_ids = fields.Many2many("op.property.unit.feature.group", string="Feature Groups", )
     amenities_percent = fields.Float(string='Premium', compute='_compute_property_amenities')
@@ -206,6 +213,12 @@ class ProductTemplate(models.Model):
                 line.amenities_percent = line.property_amenities_id.percent
             else:
                 line.amenities_percent = 0
+    
+    @api.onchange('property_location_id')
+    def _compute_rate_per_marla(self):
+        for rec in self:
+            if rec.property_location_id:
+                rec.plot_file = rec.property_location_id.marla_price
 
     plot_size = fields.Char(string='Plot Size')
     road_width = fields.Char(string='Road Width')                       
