@@ -44,12 +44,12 @@ class UniqPlotResellWizard(models.TransientModel):
         }
         booking = self.env['sale.order'].create(booking_vals)
         for prd_line in self.product_ids:
-            fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('amount','=',prd_line.categ_id.process_fee)] ,limit=1)
+            fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('plot_id','=',prd_line.id),('processing_fee_submit','=',True),('amount','=',prd_line.categ_id.process_fee)] ,limit=1)
             fee_payment.update({
                'order_id':booking.id,
                'partner_id':self.partner_id.id,
             })
-            membership_fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('amount','=',prd_line.categ_id.allottment_fee)] ,limit=1)
+            membership_fee_payment=self.env['account.payment'].search([('order_id','=',prd_line.booking_id.id),('plot_id','=',prd_line.id),('membership_fee_submit','=', True),('amount','=',prd_line.categ_id.allottment_fee)] ,limit=1)
             membership_fee_payment.update({
                'order_id':booking.id,
             })
@@ -69,22 +69,26 @@ class UniqPlotResellWizard(models.TransientModel):
             booking_line = self.env['sale.order.line'].create(line_vals)             
         payments=self.env['account.payment'].search([('id','in', payment_list)])        
         batch_journal_list = []
-        for pay_line in payments:
-            
+        batch_list = []
+        for pay_line in payments: 
             batch_journal_list.append(pay_line.journal_id.id)
+            batch_list.append(pay_line.batch_payment_id.id)
             pay_line.action_draft()
             pay_line.update({
                 'partner_id': self.partner_id.id,
                 'order_id': booking.id,
             })
             pay_line.action_post()
+            pay_line.batch_payment_id.update({
+                    'state': 'reconciled',
+                })
             
         batch_journal_list.append(fee_payment.journal_id.id) 
         payment_list.append(fee_payment.id)
         batch_journal_list.append(membership_fee_payment.journal_id.id)
         payment_list.append(membership_fee_payment.id)
         uniq_batch_journal_list = set(batch_journal_list)
-        
+        unique_batch_list = set(batch_list)
         for uniq_batch in uniq_batch_journal_list:
             if uniq_batch!=False:
                 total_b_pay = 0
@@ -110,3 +114,11 @@ class UniqPlotResellWizard(models.TransientModel):
                 batch.update({
                    'state': 'reconciled',
                 })
+                
+        for unique_batch in unique_batch_list:
+            batch_paym=self.env['account.batch.payment'].search([('id','=', unique_batch)])
+            batch_paym.update({
+                   'state': 'reconciled',
+                })
+            
+            

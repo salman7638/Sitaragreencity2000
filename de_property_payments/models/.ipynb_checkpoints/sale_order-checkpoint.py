@@ -183,53 +183,54 @@ class SaleOrder(models.Model):
               
 
     def action_assign_discount(self):
-        for line in self:
-            total_discount_amount = 0
-            total_pending_installment_amt = 0
-            total_partial_pending_installment_amt = 0
-            for o_line in self.order_line:
-                line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
-                total_discount_amount += line_discount
-            total_installment_count = 0
-            total_partial_pay_count = 0
-            for installment in line.installment_line_ids:
-                if installment.remarks == 'Pending':
-                    total_installment_count += 1
-                    total_pending_installment_amt += installment.total_actual_amount
+        pass
+#         for line in self:
+#             total_discount_amount = 0
+#             total_pending_installment_amt = 0
+#             total_partial_pending_installment_amt = 0
+#             for o_line in self.order_line:
+#                 line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
+#                 total_discount_amount += line_discount
+#             total_installment_count = 0
+#             total_partial_pay_count = 0
+#             for installment in line.installment_line_ids:
+#                 if installment.remarks == 'Pending':
+#                     total_installment_count += 1
+#                     total_pending_installment_amt += installment.total_actual_amount
                     
-            if  total_installment_count == 0:   
-                for installment in line.installment_line_ids:
-                    if installment.remarks == 'Partial Payment':
-                        total_partial_pay_count += 1
-                        total_partial_pending_installment_amt += (installment.total_actual_amount - installment.amount_paid)        
+#             if  total_installment_count == 0:   
+#                 for installment in line.installment_line_ids:
+#                     if installment.remarks == 'Partial Payment':
+#                         total_partial_pay_count += 1
+#                         total_partial_pending_installment_amt += (installment.total_actual_amount - installment.amount_paid)        
                     
-            total_pending_installment_amt = total_pending_installment_amt - total_discount_amount        
-            for installment in line.installment_line_ids:
-                if installment.remarks == 'Pending':
-                    installment.update({
-                        'total_amount':  (total_pending_installment_amt/total_installment_count) ,
-                        'is_discount_ded': True,
-                        'amount_residual': (total_pending_installment_amt/total_installment_count)  ,
-                    })
-                if  total_installment_count == 0 and total_partial_pay_count > 0:
-                    if installment.remarks == 'Partial Payment':
-                        if total_partial_pending_installment_amt < total_discount_amount:
-                            raise UserError('You are not Allow to add discount more than Pending Amount! '+str(total_partial_pending_installment_amt) )
+#             total_pending_installment_amt = total_pending_installment_amt - total_discount_amount        
+#             for installment in line.installment_line_ids:
+#                 if installment.remarks == 'Pending':
+#                     installment.update({
+#                         'total_amount':  (total_pending_installment_amt/total_installment_count) ,
+#                         'is_discount_ded': True,
+#                         'amount_residual': (total_pending_installment_amt/total_installment_count)  ,
+#                     })
+#                 if  total_installment_count == 0 and total_partial_pay_count > 0:
+#                     if installment.remarks == 'Partial Payment':
+#                         if total_partial_pending_installment_amt < total_discount_amount:
+#                             raise UserError('You are not Allow to add discount more than Pending Amount! '+str(total_partial_pending_installment_amt) )
                         
-                        total_partial_pending_installment_amt = total_partial_pending_installment_amt - total_discount_amount   
-                        if total_partial_pending_installment_amt == total_discount_amount:
-                            installment.update({
-                                'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
-                                'is_discount_ded': True,
-                                'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
-                                'remarks': 'Paid',
-                            })
-                        else:
-                            installment.update({
-                                'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
-                                'is_discount_ded': True,
-                                'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
-                            })    
+#                         total_partial_pending_installment_amt = total_partial_pending_installment_amt - total_discount_amount   
+#                         if total_partial_pending_installment_amt == total_discount_amount:
+#                             installment.update({
+#                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'is_discount_ded': True,
+#                                 'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'remarks': 'Paid',
+#                             })
+#                         else:
+#                             installment.update({
+#                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'is_discount_ded': True,
+#                                 'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                             })    
                         
                 
 
