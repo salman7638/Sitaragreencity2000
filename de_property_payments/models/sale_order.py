@@ -115,37 +115,21 @@ class SaleOrder(models.Model):
                   
             payments = self.env['account.payment'].search([('order_id','=',line.id),('state','in',('draft','posted'))])
             for pay in payments:
-                #if pay.type!='fee':
                 total_paid_amount += pay.amount  
             residual_amount = (total_membership_fee + total_processing_fee + line.amount_total) - total_paid_amount
             tot_booking_amount = (((line.amount_total)/100) * 10) + total_processing_fee
             booking_amount = ((((line.amount_total)/100) * 10) + total_processing_fee) - total_paid_amount
             allotment_amount = (((line.amount_total)/100) * 15) + total_membership_fee
             if booking_amount <=0:
-                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - tot_booking_amount)   
+                allotment_amount = ((((line.amount_total)/100) * 15) + total_membership_fee) - (total_paid_amount - (tot_booking_amount))   
             advance_amount = (((line.amount_total)/100) * 25)     
             installment_amount = (((line.amount_total)/100) * 75)
             if booking_amount <=0 and allotment_amount<=0: 
-                remaining_amount=total_paid_amount - advance_amount
-                installment_amount = (((line.amount_total)/100) * 75) - (total_paid_amount - advance_amount)
-            if booking_amount < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:
-               line.update({
-                   'state': 'draft',
-               })
-               for line_prod in line.order_line:
-                    line_prod.product_id.update({
-                        'state': 'reserved',
-                    })
-            if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
-                line.update({
-                    'state': 'booked',
-                })
-                for line_prod in line.order_line:
-                    line_prod.product_id.update({
-                        'state': 'booked',
-                    })                     
-            if line.amount_paid > advance_amount:
-                diff_advance_amt = total_paid_amount - advance_amount
+                remaining_amount=total_paid_amount - (advance_amount + total_processing_fee + total_membership_fee)
+                installment_amount = (((line.amount_total)/100) * 75) - (remaining_amount)
+                              
+            if line.amount_paid > (advance_amount + total_processing_fee + total_membership_fee) :
+                diff_advance_amt = total_paid_amount - (advance_amount + total_processing_fee + total_membership_fee)
                 installment_amount = (((line.amount_total)/100) * 75) - diff_advance_amt
             line.update({
                 'amount_paid':  round(total_paid_amount),
@@ -160,49 +144,98 @@ class SaleOrder(models.Model):
             if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 25:
                 line.received_percent = 25
                 line.action_register_allottment()
-            line.action_assign_discount()    
+             
             
+            if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
+                line.update({
+                   'state': 'booked',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'booked',
+                    }) 
+            if line.booking_amount_residual > 0 and line.amount_paid < ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
+                line.update({
+                   'state': 'draft',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'reserved',
+                    })
+                    
+            if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
+                line.update({
+                    'state': 'booked',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'booked',
+                    })
+            if line.allotment_amount_residual <= 0:  
+                line.update({
+                    'state': 'sale',
+                })
+                for line_prod in line.order_line:
+                    line_prod.product_id.update({
+                        'state': 'un_posted_sold',
+                    })        
 
+              
 
     def action_assign_discount(self):
         pass
 #         for line in self:
-#             total_discount_amount=0
+#             total_discount_amount = 0
+#             total_pending_installment_amt = 0
+#             total_partial_pending_installment_amt = 0
 #             for o_line in self.order_line:
 #                 line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
-#                 total_discount_amount+=line_discount
-#             pending_installment_count=0
-#             for installment_count in line.installment_line_ids:
-#                 if installment_count.remarks == 'Pending':  
-#                     pending_installment_count+=1  
-#             if total_discount_amount>=0 and pending_installment_count>0 :    
+#                 total_discount_amount += line_discount
+#             total_installment_count = 0
+#             total_partial_pay_count = 0
+#             for installment in line.installment_line_ids:
+#                 if installment.remarks == 'Pending':
+#                     total_installment_count += 1
+#                     total_pending_installment_amt += installment.total_actual_amount
+                    
+#             if  total_installment_count == 0:   
 #                 for installment in line.installment_line_ids:
-#                     if installment.remarks == 'Pending':
-#                         installment.update({
-#                             'total_amount':  (line.installment_amount_residual/pending_installment_count) ,
-#                             'amount_residual': (line.installment_amount_residual/pending_installment_count)  ,
-#                         })
-#             total_processing_fee = 0 
-#             total_membership_fee = 0
-#             for order_line in line.order_line:
-#                 total_processing_fee += order_line.product_id.categ_id.process_fee
-#                 total_membership_fee += order_line.product_id.categ_id.allottment_fee        
-#             if line.booking_amount_residual < ((line.amount_total+total_processing_fee+total_membership_fee)/100) * 5:  
-#                 line.update({
-#                     'state': 'draft',
-#                 })
-#                 for line_prod in line.order_line:
-#                     line_prod.product_id.update({
-#                         'state': 'reserved',
+#                     if installment.remarks == 'Partial Payment':
+#                         total_partial_pay_count += 1
+#                         total_partial_pending_installment_amt += (installment.total_actual_amount - installment.amount_paid)        
+                    
+#             total_pending_installment_amt = total_pending_installment_amt - total_discount_amount        
+#             for installment in line.installment_line_ids:
+#                 if installment.remarks == 'Pending':
+#                     installment.update({
+#                         'total_amount':  (total_pending_installment_amt/total_installment_count) ,
+#                         'is_discount_ded': True,
+#                         'amount_residual': (total_pending_installment_amt/total_installment_count)  ,
 #                     })
-#             if line.allotment_amount_residual > 0 and line.booking_amount_residual <= 0:  
-#                 line.update({
-#                     'state': 'booked',
-#                 })
-#                 for line_prod in line.order_line:
-#                     line_prod.product_id.update({
-#                         'state': 'booked',
-#                     })  
+#                 if  total_installment_count == 0 and total_partial_pay_count > 0:
+#                     if installment.remarks == 'Partial Payment':
+#                         if total_partial_pending_installment_amt < total_discount_amount:
+#                             raise UserError('You are not Allow to add discount more than Pending Amount! '+str(total_partial_pending_installment_amt) )
+                        
+#                         total_partial_pending_installment_amt = total_partial_pending_installment_amt - total_discount_amount   
+#                         if total_partial_pending_installment_amt == total_discount_amount:
+#                             installment.update({
+#                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'is_discount_ded': True,
+#                                 'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'remarks': 'Paid',
+#                             })
+#                         else:
+#                             installment.update({
+#                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                                 'is_discount_ded': True,
+#                                 'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+#                             })    
+                        
+                
+
+                   
+                            
                         
             
     def action_register_payment(self):
@@ -313,6 +346,7 @@ class SaleOrderLine(models.Model):
     comission_amount = fields.Float(string='Commission')
     processing_fee = fields.Float(string='Processing Fee')
     membership_fee = fields.Float(string='Membership Fee')
+    
     commission_type = fields.Selection([
         ('amount', 'Amount'),
         ('percent', 'Percentage'),
@@ -385,9 +419,10 @@ class OrderInstallmentLine(models.Model):
     payment_date = fields.Date(string='Payment Date')
     amount_paid = fields.Float(string='Amount Paid')
     amount_residual = fields.Float(string='Amount Due')
+    total_actual_amount = fields.Float(string='Actual Amount')
     remarks = fields.Char(string='Remarks')
     order_id = fields.Many2one('sale.order', string='Order')
-    
+    is_discount_ded = fields.Boolean(string='Discount')
     
     
 class PlotsReseller(models.Model):

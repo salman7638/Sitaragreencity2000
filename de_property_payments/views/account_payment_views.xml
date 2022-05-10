@@ -8,6 +8,8 @@
 			 <field name="arch" type="xml">                 
                 <xpath expr="//field[@name='journal_id']" position="after">
                        <field name='order_id' string='Booking/Allotment' invisible='1'/>
+                       <field name='plot_id' string='plot' invisible='1'/>
+                       
                        <field name='type'  invisible='1'/>
                        <field name='processing_fee_submit'  invisible='1'/>
                        <field name='membership_fee_submit'  invisible='1'/>

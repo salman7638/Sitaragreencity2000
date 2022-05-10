@@ -68,6 +68,8 @@ class RegisterPayWizard(models.TransientModel):
                      'ref': self.check_number,
                      'payment_type': 'inbound',
                      'order_id': self.sale_id.id,
+                     'plot_id': o_line.product_id.id,
+                     
                      'type': 'fee',
                      'processing_fee_submit': True,
                      }
@@ -91,6 +93,7 @@ class RegisterPayWizard(models.TransientModel):
                      'ref': self.check_number,
                      'payment_type': 'inbound',
                      'order_id': self.sale_id.id,
+                     'plot_id': o_line.product_id.id,
                      'type': 'fee',
                      'membership_fee_submit': True,
                      }
@@ -117,6 +120,7 @@ class RegisterPayWizard(models.TransientModel):
                 'ref': self.check_number,
                 'payment_type': 'inbound',
                 'order_id': self.sale_id.id,
+                'plot_id': rorder.product_id.id,
                 'type': self.type,
                 'installment_id': self.installment_id.id,
                 }
@@ -146,6 +150,7 @@ class RegisterPayWizard(models.TransientModel):
                         'remarks': self.remarks,
                         'payment_type': 'inbound',
                         'order_id': self.sale_id.id,
+                        'plot_id': diff_order.product_id.id,
                         'type': self.type,
                         'installment_id': self.installment_id.id,
                         }
@@ -171,6 +176,8 @@ class RegisterPayWizard(models.TransientModel):
                         'remarks': self.remarks,
                         'payment_type': 'inbound',
                         'order_id': self.sale_id.id,
+                        'plot_id': diff_order.product_id.id,
+                        'plot_id': o_line.product_id.id,
                         'type': self.type,
                         'installment_id': self.installment_id.id,
                         }
@@ -298,6 +305,9 @@ class RegisterPayWizard(models.TransientModel):
         batch_vals = {
             'batch_type': 'inbound',
             'journal_id': self.journal_id.id,
+            'partner_id':  self.partner_id.id,
+            'check_number':  self.check_number,
+            'narration':  ' Customer Payments '+ str(self.token_amount) +' - '+ str(self.partner_id.name),  
             'order_id': self.sale_id.id,
             'date': self.date,
             'state': 'reconciled',
