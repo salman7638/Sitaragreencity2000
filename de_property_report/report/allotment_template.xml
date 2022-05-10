@@ -4,7 +4,7 @@
     <t t-call="web.html_container">
     <t t-call="web.external_layout">
         <div class="page"  style='font-size:12px;'>
-            <t t-foreach="docs.order_line"  t-as="line">
+           
             <div class="oe_structure"/>
              <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
                
@@ -95,7 +95,6 @@
              <br/>
              <br/>
              <p>  &#160; &#160; &#160; &#160;Thumb Impression </p> 
-            </t>
            
           </div>
     </t>
@@ -106,7 +105,6 @@
     <t t-call="web.html_container">
     <t t-call="web.external_layout">
         <div class="page"  style='font-size:12px;'>
-            <t t-foreach="docs.order_line" t-as="line">
             <div class="oe_structure"/>
              <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
                <strong>Printed On:</strong>
@@ -196,7 +194,6 @@
              <br/>
              <br/>
              <p>  &#160; &#160; &#160; &#160;Thumb Impression </p>             
-            </t>
           </div>
     </t>
     </t>
@@ -205,12 +202,12 @@
 <template id="allotment_report">
         <t t-call="web.html_container">
          <t t-foreach="docs" t-as="docs">
+           <t t-foreach="docs.order_line"  t-as="line">
             <t t-call="de_property_report.allotment_office_report" />
-         </t>
-         <t t-foreach="docs" t-as="docs">
             <t t-call="de_property_report.allotment_customer_report" />
          </t>
         </t>
+       </t>
     </template>
 
       
