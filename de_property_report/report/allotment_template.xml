@@ -4,8 +4,10 @@
     <t t-call="web.html_container">
     <t t-call="web.external_layout">
         <div class="page"  style='font-size:12px;'>
+            <t t-foreach="docs.order_line"  t-as="line">
             <div class="oe_structure"/>
              <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
+               
                <strong>Printed On:</strong>
                <span  t-esc="datetime.datetime.strptime(str(datetime.datetime.now()+ relativedelta(hours =+ 5)), '%Y-%m-%d %H:%M:%S.%f').strftime('%d-%b-%y %H:%M %p')"/> <br/>
                <strong>Office Copy</strong>
@@ -55,7 +57,7 @@
                         <td >ADDRESS.         :</td>
                         <td style='text-align:left;'><span t-esc='docs.street'/></td>
                     </tr>
-                    <t t-foreach="docs.order_line" t-as="line">
+<!--                     <t t-foreach="docs.order_line" t-as="line"> -->
                      <tr>
                         <td >PLOT TYPE.       :</td>
                         <td style='text-align:left;'><span t-esc='line.plot_type'/></td>
@@ -68,7 +70,7 @@
                         <td >AREA(MARLA)         :</td>
                         <td style='text-align:left;'><span t-esc='round(float(line.size),2)'/></td>
                     </tr>
-                    </t>
+<!--                     </t> -->
             </table>
                     
         
@@ -92,7 +94,8 @@
              <br/>
              <br/>
              <br/>
-             <p>  &#160; &#160; &#160; &#160;Thumb Impression </p>             
+             <p>  &#160; &#160; &#160; &#160;Thumb Impression </p> 
+            </t>
            
           </div>
     </t>
@@ -103,6 +106,7 @@
     <t t-call="web.html_container">
     <t t-call="web.external_layout">
         <div class="page"  style='font-size:12px;'>
+            <t t-foreach="docs.order_line" t-as="line">
             <div class="oe_structure"/>
              <div  class='pull-right' style="max-width: 250px;height: 20px; color:blue;margin:5px;">
                <strong>Printed On:</strong>
@@ -154,7 +158,7 @@
                         <td >ADDRESS.         :</td>
                         <td style='text-align:left;'><span t-esc='docs.street'/></td>
                     </tr>
-                    <t t-foreach="docs.order_line" t-as="line">
+<!--                     <t t-foreach="docs.order_line" t-as="line"> -->
                      <tr>
                         <td >PLOT TYPE.       :</td>
                         <td style='text-align:left;'><span t-esc='line.plot_type'/></td>
@@ -167,7 +171,7 @@
                         <td >AREA(MARLA)         :</td>
                         <td style='text-align:left;'><span t-esc='round(float(line.size),2)'/></td>
                     </tr>
-                    </t>
+<!--                     </t> -->
             </table>
                     
         
@@ -192,7 +196,7 @@
              <br/>
              <br/>
              <p>  &#160; &#160; &#160; &#160;Thumb Impression </p>             
-           
+            </t>
           </div>
     </t>
     </t>
