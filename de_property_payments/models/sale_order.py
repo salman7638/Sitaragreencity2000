@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import math
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -201,7 +202,7 @@ class SaleOrder(models.Model):
             if line.allotment_amount_residual==0:
                 booking_amt_due = (line.amount_total/100) * 15
                 ext_tax_ded += ((booking_amt_due/100) * tot_line_disc_amt) 
-                
+            ext_tax_ded = round(ext_tax_ded)    
             if line.allotment_amount_residual > ext_tax_ded:
                 total_discount_amount =  total_discount_amount - ext_tax_ded
             elif line.allotment_amount_residual < ext_tax_ded:    
@@ -226,7 +227,7 @@ class SaleOrder(models.Model):
                     installment.update({
 #                         'total_amount':  (total_pending_installment_amt/total_installment_count) ,
                         'is_discount_ded': True,
-                        'amount_residual': round((total_pending_installment_amt/total_installment_count))  ,
+                        'amount_residual': math.ceil((total_pending_installment_amt/total_installment_count))  ,
                     })
                 if  total_installment_count == 0 and total_partial_pay_count > 0:
                     if installment.remarks == 'Partial Payment':
@@ -238,14 +239,14 @@ class SaleOrder(models.Model):
                             installment.update({
 #                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
                                 'is_discount_ded': True,
-                                'amount_residual':  round((total_partial_pending_installment_amt/total_partial_pay_count)) ,
+                                'amount_residual':  math.ceil((total_partial_pending_installment_amt/total_partial_pay_count)) ,
                                 'remarks': 'Paid',
                             })
                         else:
                             installment.update({
 #                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
                                 'is_discount_ded': True,
-                                'amount_residual':  round((total_partial_pending_installment_amt/total_partial_pay_count)) ,
+                                'amount_residual':  math.ceil((total_partial_pending_installment_amt/total_partial_pay_count)) ,
                             })    
                         
                 
