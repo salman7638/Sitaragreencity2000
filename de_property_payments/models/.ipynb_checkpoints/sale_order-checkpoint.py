@@ -226,7 +226,7 @@ class SaleOrder(models.Model):
                     installment.update({
 #                         'total_amount':  (total_pending_installment_amt/total_installment_count) ,
                         'is_discount_ded': True,
-                        'amount_residual': (total_pending_installment_amt/total_installment_count)  ,
+                        'amount_residual': round((total_pending_installment_amt/total_installment_count))  ,
                     })
                 if  total_installment_count == 0 and total_partial_pay_count > 0:
                     if installment.remarks == 'Partial Payment':
@@ -238,14 +238,14 @@ class SaleOrder(models.Model):
                             installment.update({
 #                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
                                 'is_discount_ded': True,
-                                'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+                                'amount_residual':  round((total_partial_pending_installment_amt/total_partial_pay_count)) ,
                                 'remarks': 'Paid',
                             })
                         else:
                             installment.update({
 #                                 'total_amount':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
                                 'is_discount_ded': True,
-                                'amount_residual':  (total_partial_pending_installment_amt/total_partial_pay_count) ,
+                                'amount_residual':  round((total_partial_pending_installment_amt/total_partial_pay_count)) ,
                             })    
                         
                 
