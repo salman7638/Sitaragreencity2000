@@ -138,6 +138,7 @@ class SaleOrder(models.Model):
                 'allotment_amount_residual': round(allotment_amount if allotment_amount > 0 else 0),
                 'installment_amount_residual':(installment_amount if installment_amount > 0 else 0), 
             })
+            line.action_assign_discount()
             if line.amount_paid >= ((line.amount_total + total_membership_fee + total_processing_fee)/100) * 5:
                 line.received_percent = 5
                 line.action_confirm_booking()
@@ -194,14 +195,18 @@ class SaleOrder(models.Model):
                 line_discount = (o_line.price_unit) * ( (o_line.discount or 0.0) / 100.0)
                 total_discount_amount += line_discount
                 
-            tot_pending_amt = line.booking_amount_residual + line.allotment_amount_residual
-            allottment_amount_discount = ((tot_pending_amt/100) * tot_line_disc_amt)
             if line.booking_amount_residual==0:
                 booking_amt_due = (line.amount_total/100) * 10
-                ext_tax_ded = ((booking_amt_due/100) * tot_line_disc_amt)
-             
-            total_discount_amount =  total_discount_amount - ext_tax_ded
-            total_discount_amount = total_discount_amount - allottment_amount_discount
+                ext_tax_ded += ((booking_amt_due/100) * tot_line_disc_amt)
+            if line.allotment_amount_residual==0:
+                booking_amt_due = (line.amount_total/100) * 15
+                ext_tax_ded += ((booking_amt_due/100) * tot_line_disc_amt) 
+            ext_tax_ded = round(ext_tax_ded)    
+            if line.allotment_amount_residual > ext_tax_ded:
+                total_discount_amount =  total_discount_amount - ext_tax_ded
+            elif line.allotment_amount_residual < ext_tax_ded:    
+                total_discount_amount =  total_discount_amount - (ext_tax_ded - line.allotment_amount_residual)
+            
             total_installment_count = 0
             total_partial_pay_count = 0
             for installment in line.installment_line_ids:
