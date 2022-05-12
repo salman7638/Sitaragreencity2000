@@ -201,7 +201,7 @@ class SaleOrder(models.Model):
             if line.allotment_amount_residual==0:
                 booking_amt_due = (line.amount_total/100) * 15
                 ext_tax_ded += ((booking_amt_due/100) * tot_line_disc_amt) 
-            ext_tax_ded = round(ext_tax_ded)    
+                
             if line.allotment_amount_residual > ext_tax_ded:
                 total_discount_amount =  total_discount_amount - ext_tax_ded
             elif line.allotment_amount_residual < ext_tax_ded:    
