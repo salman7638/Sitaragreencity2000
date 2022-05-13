@@ -15,12 +15,16 @@
     
        <!--sale.order form view of wizard-->    
    <record id="sale_order_form_view_portal" model="ir.ui.view">
-			<field name="name">sale.order.type.form.view.portal</field>
+			<field name="name">sale.order.type.form.view</field>
 			<field name="model">sale.order</field>
 			<field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
 				<xpath expr="//field[@name='payment_date']" position="after">
                     <field name="fine_amount"/>
+                </xpath>
+                <xpath expr="//field[@name='installment_amount_residual']" position="after">
+                    <field name="sum_fine_amount"/>
+                    <field name="sum_fine_residual_amount" invisible="1"/>
                 </xpath>
 			</field>
 	</record>

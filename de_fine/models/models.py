@@ -14,9 +14,15 @@ class OrderInstallmentLine(models.Model):
     _inherit = "order.installment.line"
     
     fine_amount = fields.Float(string="Fine Amount", compute='_compute_fine_amount', store='true')
+ 
+            
+            
+            
+            
     
     @api.depends("date","total_amount","amount_residual","fine_amount")
     def _compute_fine_amount(self):
+#         total_fine_amount = 0
         for line in self:
             if line.date > date.today():
                 amu = line.total_amount - line.fine_amount
@@ -38,32 +44,24 @@ class OrderInstallmentLine(models.Model):
             if line.fine_amount > 0 and line.remarks=='Pending':
                 line.total_amount= line.fine_amount + line.total_amount
                 line.amount_residual= line.fine_amount + line.amount_residual
+
                 
-              
+                              
                 
-#                 total_amo = line.fine_amount + line.total_amount
-#                 amu_residual =  line.fine_amount + line.amount_residual
-  
-                
-#             elif line.date > date.today():
-#                 line.total_amount = total_amo - line.fine_amount
-#                 line.amount_residual= amu_residual - line.fine_amount
-                
-              
-                
-                
-                
-                
-# class SaleOrder(models.Model):
-#     _inherit = "sale.order"
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
     
-#     @api.model
-#     def add_fine_amount(self):
-#         for rec in self:
-#             total_fine_amount = 0
-#             for line in rec.installment_line_ids:
-#                 if line.fine_amount > 0:
-#                     total_fine_amount = total_fine_amount + line.fine_amount
-#             rec.installment_amount_residual = total_fine_amount + rec.installment_amount_residual
-                
-                
+    sum_fine_amount =  fields.Float(string="Total Fine Amout", compute='_compute_fine_sum')
+    sum_fine_residual_amount = fields.Float(string="Residual")
+    
+    @api.depends("installment_amount_residual")
+    def _compute_fine_sum(self):
+        for rec in self:
+            total_fine_amount = 0
+            for line in rec.installment_line_ids:
+                if line.fine_amount > 0:
+                    total_fine_amount = total_fine_amount + line.fine_amount
+            rec.sum_fine_amount = total_fine_amount 
+#             rec.update({
+#                 'installment_amount_residual': rec.sum_fine_amount
+#             })
