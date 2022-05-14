@@ -9,7 +9,7 @@
                     <group>
                       <group>
                           <field name="discount" />
-                          <field name="discount" />
+                          <field name="installment_created" invisible='1'/>
                       </group>
                       <group>
                           <field name="sale_id"  invisible='1'/>                          
@@ -17,7 +17,7 @@
                     </group> 
                     
                     <notebook>
-                        <page string='Plots'>
+                        <page string='Plots' attrs="{'invisible': [('installment_created','=',True)]}" >
                             <field name='plot_ids' >
                             <tree editable='bottom'>
                                 <field name='product_id' />
