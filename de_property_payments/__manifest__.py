@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'wizard/register_pay_wizard.xml',
         'wizard/uniq_plot_resell_wizard.xml',
+        'wizard/booking_discount_wizard.xml',
         'data/ir_server_action_data.xml',
         'views/account_batch_payment_views.xml',
         'wizard/register_installment_wizard.xml',
