@@ -217,7 +217,7 @@ class PlotDetailXlS(models.AbstractModel):
                 if plt.date_validity:
                     if plt.state=='booked' and fields.date.today() > plt.date_validity:
                         overdue_days = (fields.date.today() - plt.date_validity).days
-                        overdue_days_amount = (plt.allottment_fee + plt.process_fee + plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
+                        overdue_days_amount = (plt.categ_id.allottment_fee + plt.categ_id.process_fee + plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
                         due_date_report = plt.date_validity.strftime('%d-%m-%Y') 
                         remarks = 'Allotment Amount Overdue'
                 if plt.booking_id.state=='sale':
