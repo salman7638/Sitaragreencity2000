@@ -179,9 +179,9 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, round(amt_percent_received,4), format2)
                 col_no += 1
             if docs.type in ('unconfirm', 'reserved'): 
-                sheet.write(row, col_no, str(plt.date_reservation), format2)
+                sheet.write(row, col_no, str(plt.date_reservation.strftime('%d-%m-%Y')), format2)
                 col_no += 1
-                sheet.write(row, col_no, str(plt.date_validity), format2)
+                sheet.write(row, col_no, str(plt.date_validity.strftime('%d-%m-%Y')), format2)
                 col_no += 1
             sheet.write(row, col_no, str(plt.property_location_id.location_id.name), format2)
             col_no += 1
@@ -206,20 +206,20 @@ class PlotDetailXlS(models.AbstractModel):
                     if plt.state=='reserved' and fields.date.today() > plt.booking_validity:
                         overdue_days = (fields.date.today() - plt.booking_validity).days
                         overdue_days_amount = plt.booking_amount - plt.amount_paid
-                        due_date_report = plt.booking_validity
+                        due_date_report = plt.booking_validity.strftime('%d-%m-%Y')
                         remarks = 'Booking Amount Overdue'
                 if plt.date_validity:
                     if plt.state=='booked' and fields.date.today() > plt.date_validity:
                         overdue_days = (fields.date.today() - plt.date_validity).days
                         overdue_days_amount = (plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
-                        due_date_report = plt.date_validity 
+                        due_date_report = plt.date_validity.strftime('%d-%m-%Y') 
                         remarks = 'Allotment Amount Overdue'
                 if plt.booking_id.state=='sale':
                     for installment in plt.booking_id.installment_line_ids:
                         if fields.date.today() > installment.date and installment.remarks != 'Paid':
                             overdue_days = (fields.date.today() - installment.date).days
                             overdue_days_amount = installment.amount_residual - installment.amount_paid
-                            due_date_report = installment.date
+                            due_date_report = installment.date.strftime('%d-%m-%Y')
                             remarks = installment.name  
                                 
                     
@@ -229,7 +229,7 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, '{0:,}'.format(int(round(overdue_days))), format2)
                 total_overdue_days += overdue_days
                 col_no += 1
-                sheet.write(row, col_no, str(due_date_report.strftime('%d-%m-%Y')), format2)
+                sheet.write(row, col_no, str(due_date_report), format2)
                 col_no += 1
                 sheet.write(row, col_no, str(remarks), format2)
                 col_no += 1 
