@@ -92,7 +92,10 @@ class PlotDetailXlS(models.AbstractModel):
             sheet.write(2, col_no, "ADVANCE AMOUNT RECEIVED",header_row_style)
             col_no += 1  
             sheet.write(2, col_no, "% OF AMOUNT RECEIVED",header_row_style)
-            col_no += 1  
+            col_no += 1
+        if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+            sheet.write(2, col_no, 'BOOKING DATE',header_row_style)
+            col_no += 1    
         if docs.type in ('unconfirm', 'reserved'): 
             sheet.write(2, col_no, 'DATE OF RESERVATION',header_row_style)
             col_no += 1 
@@ -178,6 +181,9 @@ class PlotDetailXlS(models.AbstractModel):
                 col_no += 1
                 sheet.write(row, col_no, round(amt_percent_received,4), format2)
                 col_no += 1
+            if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+                sheet.write(row, col_no, str(plt.booking_validity.strftime('%d-%m-%Y') ), format2)
+                col_no += 1
             if docs.type in ('unconfirm', 'reserved'): 
                 sheet.write(row, col_no, str(plt.date_reservation.strftime('%d-%m-%Y')), format2)
                 col_no += 1
@@ -260,6 +266,9 @@ class PlotDetailXlS(models.AbstractModel):
             col_no += 1
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 1
+        if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+            sheet.write(row, col_no, str(), header_row_style)
+            col_no += 1 
         if docs.type in ('unconfirm', 'reserved'): 
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 1
