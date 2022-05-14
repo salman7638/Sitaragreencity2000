@@ -59,6 +59,7 @@
                     <field name="processing_fee_submit"    invisible='1'/>
                     <field name="membership_fee_submit"   invisible='1' />
                     <field name="amount_paid"  string='Total Amount Paid'/>
+                    <field name="disc" readonly='1'/>
                     <field name="amount_residual" string='Total Amount Due' readonly='1'/>
                     <field name="booking_amount_residual"  readonly='1' />
                     <field name="allotment_amount_residual"  readonly='1' />
@@ -71,7 +72,10 @@
                     <field name="received_percent" invisible='1' />
                 </xpath>    
                 <xpath expr="//field['order_line']//tree//field[@name='product_id']" position="replace">                       <field name="product_id" domain="[('product_tmpl_id.state', 'in', ('available','unconfirm','reserved'))]" />
-                </xpath>    
+                </xpath> 
+                 
+                 <xpath expr="//field['order_line']//tree//field[@name='discount']" position="replace">                                        <field name="discount" readonly='1' />
+                 </xpath> 
                  
                 <xpath expr="//field['order_line']//tree//field[@name='price_subtotal']" position="before"> 
                      <field name="commission_type" />
@@ -95,9 +99,9 @@
                             <field name="name" readonly='1'/> 
                             <field name="date" />
                             <field name="payment_date" readonly='1' /> 
-                            <field name="total_amount" readonly='1' /> 
+                            <field name="total_amount"/> 
                             <field name="amount_paid" readonly='1'/>  
-                            <field name="amount_residual" readonly='1'/>
+                            <field name="amount_residual"/>
                             <field name="total_actual_amount" invisible='1' /> 
                             <field name="remarks" readonly='1'/>   
                             <field name="order_id" invisible='1' />  
