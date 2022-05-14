@@ -24,7 +24,6 @@
                 </xpath>
                 <xpath expr="//field[@name='installment_amount_residual']" position="after">
                     <field name="sum_fine_amount"/>
-                    <field name="sum_fine_residual_amount" invisible="1"/>
                 </xpath>
 			</field>
 	</record>

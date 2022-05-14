@@ -52,7 +52,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
     
     sum_fine_amount =  fields.Float(string="Total Fine Amout", compute='_compute_fine_sum')
-    sum_fine_residual_amount = fields.Float(string="Residual")
+    
     
     @api.depends("installment_amount_residual")
     def _compute_fine_sum(self):
@@ -62,6 +62,3 @@ class SaleOrder(models.Model):
                 if line.fine_amount > 0:
                     total_fine_amount = total_fine_amount + line.fine_amount
             rec.sum_fine_amount = total_fine_amount 
-#             rec.update({
-#                 'installment_amount_residual': rec.sum_fine_amount
-#             })
