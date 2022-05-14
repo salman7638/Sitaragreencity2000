@@ -182,12 +182,12 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, round(amt_percent_received,4), format2)
                 col_no += 1
             if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
-                sheet.write(row, col_no, str(plt.booking_validity.strftime('%d-%m-%Y') ), format2)
+                sheet.write(row, col_no, str(plt.booking_validity.strftime('%d-%m-%Y') if plt.booking_validity else ' '), format2)
                 col_no += 1
             if docs.type in ('unconfirm', 'reserved'): 
-                sheet.write(row, col_no, str(plt.date_reservation.strftime('%d-%m-%Y')), format2)
+                sheet.write(row, col_no, str(plt.date_reservation.strftime('%d-%m-%Y') if plt.date_reservation else ' '), format2)
                 col_no += 1
-                sheet.write(row, col_no, str(plt.date_validity.strftime('%d-%m-%Y')), format2)
+                sheet.write(row, col_no, str(plt.date_validity.strftime('%d-%m-%Y') if plt.date_validity else ' '), format2)
                 col_no += 1
             sheet.write(row, col_no, str(plt.property_location_id.location_id.name), format2)
             col_no += 1
@@ -212,20 +212,20 @@ class PlotDetailXlS(models.AbstractModel):
                     if plt.state=='reserved' and fields.date.today() > plt.booking_validity:
                         overdue_days = (fields.date.today() - plt.booking_validity).days
                         overdue_days_amount = plt.booking_amount - plt.amount_paid
-                        due_date_report = plt.booking_validity.strftime('%d-%m-%Y')
+                        due_date_report = plt.booking_validity.strftime('%d-%m-%Y') if plt.booking_validity else ' '
                         remarks = 'Booking Amount Overdue'
                 if plt.date_validity:
                     if plt.state=='booked' and fields.date.today() > plt.date_validity:
                         overdue_days = (fields.date.today() - plt.date_validity).days
                         overdue_days_amount = (plt.categ_id.allottment_fee + plt.categ_id.process_fee + plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
-                        due_date_report = plt.date_validity.strftime('%d-%m-%Y') 
+                        due_date_report = plt.date_validity.strftime('%d-%m-%Y')  if plt.date_validity else ' '
                         remarks = 'Allotment Amount Overdue'
                 if plt.booking_id.state=='sale':
                     for installment in plt.booking_id.installment_line_ids:
                         if fields.date.today() > installment.date and installment.remarks != 'Paid':
                             overdue_days = (fields.date.today() - installment.date).days
                             overdue_days_amount = installment.amount_residual - installment.amount_paid
-                            due_date_report = installment.date.strftime('%d-%m-%Y')
+                            due_date_report = installment.date.strftime('%d-%m-%Y') if installment.date else ' '
                             remarks = installment.name  
                                 
                     
