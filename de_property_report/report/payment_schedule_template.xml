@@ -272,18 +272,15 @@
                 
             </table>
         <br/>
-            <br/>
-            <br/>
-            <p style='text-align:center'  > <b>BUYER ________________________</b></p> 
-             <br/>
-            <br/>
-              <table class='table table-sm'>
+            <p style="text-align:center"> <b>BUYER ________________________</b></p> 
+             
+              <table class="table table-sm">
                   <tr>
                       <td><b> 1: WITNESS ________________________</b>  </td>
                       <td><b> 2: WITNESS ________________________ </b>  </td>
                   </tr>
                    </table>
-            <table class='table table-sm'>
+            <table class="table table-sm">
                   <tr>
                       <td><b> NAME: ________________________</b>  </td>
                       <td><b> NAME:________________________ </b>  </td>
@@ -570,18 +567,15 @@
                 
             </table>
         <br/>
-            <br/>
-            <br/>
-            <p style='text-align:center'  > <b>BUYER ________________________</b></p> 
-             <br/>
-            <br/>
-              <table class='table table-sm'>
+            <p style="text-align:center"> <b>BUYER ________________________</b></p> 
+             
+              <table class="table table-sm">
                   <tr>
                       <td><b> 1: WITNESS ________________________</b>  </td>
                       <td><b> 2: WITNESS ________________________ </b>  </td>
                   </tr>
                    </table>
-            <table class='table table-sm'>
+            <table class="table table-sm">
                   <tr>
                       <td><b> NAME: ________________________</b>  </td>
                       <td><b> NAME:________________________ </b>  </td>

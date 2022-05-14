@@ -62,7 +62,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
         unconfirm_plot_list = self.env['product.product'].search([('state','=','unconfirm'),('booking_validity', '>=' , docs.date_from),('booking_validity', '<=' , docs.date_to) ])
         for unconf_plot in unconfirm_plot_list:
             line_vals = {
-                'date':  unconf_plot.booking_validity,
+                'date':  unconf_plot.booking_validity.strftime('%d-%m-%Y') if unconf_plot.booking_validity else ' ',
                 'plot_no':  unconf_plot.name , 
                 'amount':   unconf_plot.booking_amount ,
                 'remarks': '' ,
@@ -74,7 +74,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
             if not reserve_plot.booking_id:
                 token_amt = reserve_plot.booking_amount - reserve_plot.amount_paid
                 line_vals = {
-                    'date':  reserve_plot.booking_validity,
+                    'date':  reserve_plot.booking_validity.strftime('%d-%m-%Y') if reserve_plot.booking_validity else ' ',
                     'plot_no':  reserve_plot.name , 
                     'amount':  token_amt if token_amt > 0 else 0,
                     'remarks': '' ,
@@ -82,7 +82,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
                 date_wise_receivables.append(line_vals)                
             elif reserve_plot.booking_id:
                 line_vals = {
-                    'date':  reserve_plot.booking_validity,
+                    'date':  reserve_plot.booking_validity.strftime('%d-%m-%Y') if reserve_plot.booking_validity else ' ',
                     'plot_no':  reserve_plot.name , 
                     'amount':  reserve_plot.booking_id.booking_amount_residual,
                     'remarks': '' ,
@@ -94,7 +94,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
             if book_plot.booking_id:
                 if book_plot.booking_id.allotment_amount_residual > 0:
                     line_vals = {
-                        'date':  book_plot.date_validity ,
+                        'date':  book_plot.date_validity.strftime('%d-%m-%Y') if book_plot.booking_validity else ' ' ,
                         'plot_no': book_plot.name , 
                         'amount':  book_plot.booking_id.allotment_amount_residual ,
                         'remarks': 'Allotment Amount Residual' ,
@@ -108,7 +108,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
                     for installment in plot_installment.booking_id.installment_line_ids:
                         if installment.date >= docs.date_from and installment.date <= docs.date_to and installment.remarks!='Paid' and installment.amount_residual > 0:
                             line_vals = {
-                                'date':  installment.date ,
+                                'date':  installment.date.strftime('%d-%m-%Y') if installment.date else ' ' ,
                                 'plot_no': plot_installment.name , 
                                 'amount':  installment.amount_residual ,
                                 'remarks': installment.name ,
@@ -125,7 +125,7 @@ class AdvanceReceivableXlS(models.AbstractModel):
                         total_paid_amount += paid_payment.amount
                 if  total_paid_amount > 0:       
                     paid_line_vals = {
-                        'date':  paid_payment.date ,
+                        'date':  paid_payment.date.strftime('%d-%m-%Y') if paid_payment.date else ' ' ,
                         'plot_no': paid_book_plot.name , 
                         'amount':  total_paid_amount ,
                         'remarks': 'Paid Amount on '+str(paid_payment.date ) ,

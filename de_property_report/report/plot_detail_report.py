@@ -92,7 +92,10 @@ class PlotDetailXlS(models.AbstractModel):
             sheet.write(2, col_no, "ADVANCE AMOUNT RECEIVED",header_row_style)
             col_no += 1  
             sheet.write(2, col_no, "% OF AMOUNT RECEIVED",header_row_style)
-            col_no += 1  
+            col_no += 1
+        if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+            sheet.write(2, col_no, 'BOOKING DATE',header_row_style)
+            col_no += 1    
         if docs.type in ('unconfirm', 'reserved'): 
             sheet.write(2, col_no, 'DATE OF RESERVATION',header_row_style)
             col_no += 1 
@@ -123,7 +126,7 @@ class PlotDetailXlS(models.AbstractModel):
         row = 3
         sr_no = 1
         total_plot_area_marla=0
-        total_list_price=0
+        total_list_price_sale=0
         total_adv_amount_received=0
         total_list_price=0
         total_overdue_days = 0
@@ -170,7 +173,7 @@ class PlotDetailXlS(models.AbstractModel):
             total_plot_area_marla += plt.plot_area_marla
             col_no += 1
             sheet.write(row, col_no, '{0:,}'.format(int(round(plt.list_price))), format2) 
-            total_list_price += plt.list_price
+            total_list_price_sale += plt.list_price
             col_no += 1
             if docs.type in ('reserved', 'booked', 'un_posted_sold'): 
                 sheet.write(row, col_no, '{0:,}'.format(int(round(adv_amount_received))), format2)
@@ -178,10 +181,13 @@ class PlotDetailXlS(models.AbstractModel):
                 col_no += 1
                 sheet.write(row, col_no, round(amt_percent_received,4), format2)
                 col_no += 1
-            if docs.type in ('unconfirm', 'reserved'): 
-                sheet.write(row, col_no, str(plt.date_reservation), format2)
+            if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+                sheet.write(row, col_no, str(plt.booking_validity.strftime('%d-%m-%Y') if plt.booking_validity else ' '), format2)
                 col_no += 1
-                sheet.write(row, col_no, str(plt.date_validity), format2)
+            if docs.type in ('unconfirm', 'reserved'): 
+                sheet.write(row, col_no, str(plt.date_reservation.strftime('%d-%m-%Y') if plt.date_reservation else ' '), format2)
+                col_no += 1
+                sheet.write(row, col_no, str(plt.date_validity.strftime('%d-%m-%Y') if plt.date_validity else ' '), format2)
                 col_no += 1
             sheet.write(row, col_no, str(plt.property_location_id.location_id.name), format2)
             col_no += 1
@@ -206,20 +212,20 @@ class PlotDetailXlS(models.AbstractModel):
                     if plt.state=='reserved' and fields.date.today() > plt.booking_validity:
                         overdue_days = (fields.date.today() - plt.booking_validity).days
                         overdue_days_amount = plt.booking_amount - plt.amount_paid
-                        due_date_report = plt.booking_validity
+                        due_date_report = plt.booking_validity.strftime('%d-%m-%Y') if plt.booking_validity else ' '
                         remarks = 'Booking Amount Overdue'
                 if plt.date_validity:
                     if plt.state=='booked' and fields.date.today() > plt.date_validity:
                         overdue_days = (fields.date.today() - plt.date_validity).days
-                        overdue_days_amount = (plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
-                        due_date_report = plt.date_validity 
+                        overdue_days_amount = (plt.categ_id.allottment_fee + plt.categ_id.process_fee + plt.allottment_amount + plt.booking_amount) - plt.amount_paid  
+                        due_date_report = plt.date_validity.strftime('%d-%m-%Y')  if plt.date_validity else ' '
                         remarks = 'Allotment Amount Overdue'
                 if plt.booking_id.state=='sale':
                     for installment in plt.booking_id.installment_line_ids:
                         if fields.date.today() > installment.date and installment.remarks != 'Paid':
                             overdue_days = (fields.date.today() - installment.date).days
                             overdue_days_amount = installment.amount_residual - installment.amount_paid
-                            due_date_report = installment.date
+                            due_date_report = installment.date.strftime('%d-%m-%Y') if installment.date else ' '
                             remarks = installment.name  
                                 
                     
@@ -253,13 +259,16 @@ class PlotDetailXlS(models.AbstractModel):
         col_no += 1
         sheet.write(row, col_no, str(round(total_plot_area_marla,2)), header_row_style) 
         col_no += 1
-        sheet.write(row, col_no,'{0:,}'.format(int(round(total_list_price))), header_row_style) 
+        sheet.write(row, col_no,'{0:,}'.format(int(round(total_list_price_sale))), header_row_style) 
         col_no += 1
         if docs.type in ('reserved', 'booked', 'un_posted_sold'): 
             sheet.write(row, col_no, '{0:,}'.format(int(round(total_adv_amount_received))), header_row_style)
             col_no += 1
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 1
+        if docs.type in ('booked', 'un_posted_sold', 'posted_sold'): 
+            sheet.write(row, col_no, str(), header_row_style)
+            col_no += 1 
         if docs.type in ('unconfirm', 'reserved'): 
             sheet.write(row, col_no, str(), header_row_style)
             col_no += 1
