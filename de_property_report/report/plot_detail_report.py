@@ -229,7 +229,7 @@ class PlotDetailXlS(models.AbstractModel):
                 sheet.write(row, col_no, '{0:,}'.format(int(round(overdue_days))), format2)
                 total_overdue_days += overdue_days
                 col_no += 1
-                sheet.write(row, col_no, str(due_date_report), format2)
+                sheet.write(row, col_no, str(due_date_report.strftime('%d-%m-%Y')), format2)
                 col_no += 1
                 sheet.write(row, col_no, str(remarks), format2)
                 col_no += 1 
