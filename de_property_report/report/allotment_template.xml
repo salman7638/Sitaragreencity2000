@@ -55,7 +55,7 @@
                     </tr>
                      <tr>
                         <td >ADDRESS.         :</td>
-                        <td style='text-align:left;'><span t-esc='docs.street'/></td>
+                        <td style='text-align:left;'><span t-esc='docs.street'/><span t-esc='docs.street2'/><span t-esc='docs.city'/><span t-esc='docs.country'/></td>
                     </tr>
 <!--                     <t t-foreach="docs.order_line" t-as="line"> -->
                      <tr>
