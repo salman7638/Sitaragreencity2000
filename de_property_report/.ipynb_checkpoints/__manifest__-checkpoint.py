@@ -31,8 +31,10 @@
         'security/ir.model.access.csv',
         'wizard/plot_status_wizard.xml',
         'wizard/plot_detail_wizard.xml',
+        'wizard/dealer_report_wizard.xml',
         'wizard/advance_receivable_wizard.xml',
         'report/plot_detail_report.xml',
+        'report/dealer_booking_report.xml',
         'report/plot_status_report.xml',
         'report/plot_detail_report.xml',
         'report/advance_receivable_report.xml',
@@ -44,6 +46,7 @@
         'report/payment_schedule_template.xml',
         'report/payment_report.xml',
         'report/payment_template.xml',
+        'views/product_category_views.xml',
         
     ],
     # only loaded in demonstration mode
