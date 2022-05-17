@@ -31,18 +31,24 @@ class SaleOrder(models.Model):
                 'quantity': 1,
                 
             }])
-        if process_fee_sum > 0:   
+    
+        if process_fee_sum > 0: 
+#             paccount = 0
+#             if lines_data.name == 'Proceessing Fee':
+            paccount = self.env['account.account'].sudo().search([('id', '=', 251)]).id
             lines_data.append([0,0,{
             'name': 'Proceessing Fee',
             'price_unit': process_fee_sum,
-            'account_id': adv.account_i
+            'account_id': paccount,
             'quantity': 1,
             }]) 
             
-        if membership_fee_sum > 0:   
+        if membership_fee_sum > 0:
+            maccount = self.env['account.account'].sudo().search([('id', '=', 252)]).id
             lines_data.append([0,0,{
                 'name': 'Membership Fee',
                 'price_unit': membership_fee_sum,
+                'account_id': maccount,
                 'quantity': 1,
             }])  
             
@@ -68,3 +74,11 @@ class SaleOrder(models.Model):
         })
         self.account_move_id._post()
         return invoice
+    
+    
+class AccountAccount(models.Model):
+    _inherit = "account.account"
+    
+    
+    process =  fields.Boolean(string='Process')
+    membership =  fields.Boolean(string='Membership')
