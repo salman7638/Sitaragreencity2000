@@ -35,7 +35,7 @@ class SaleOrder(models.Model):
         if process_fee_sum > 0: 
 #             paccount = 0
 #             if lines_data.name == 'Proceessing Fee':
-            paccount = self.env['account.account'].sudo().search([('id', '=', 251)]).id
+            paccount = self.env['account.account'].sudo().search([('process', '=', True)]).id
             lines_data.append([0,0,{
             'name': 'Proceessing Fee',
             'price_unit': process_fee_sum,
@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
             }]) 
             
         if membership_fee_sum > 0:
-            maccount = self.env['account.account'].sudo().search([('id', '=', 252)]).id
+            maccount = self.env['account.account'].sudo().search([('membership', '=', True)]).id
             lines_data.append([0,0,{
                 'name': 'Membership Fee',
                 'price_unit': membership_fee_sum,
