@@ -13,6 +13,7 @@ class PlotResellWizard(models.TransientModel):
 
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     reseller_id = fields.Many2one('res.partner', string='Reseller')
+    is_membership_fee = fields.Boolean(string='Membership Fee')
     resell_date = fields.Date(string='Reselling Date',  required=True, default=fields.date.today())
     sale_id = fields.Many2one('sale.order', string='Order')
 
@@ -28,8 +29,11 @@ class PlotResellWizard(models.TransientModel):
         reseller = self.env['plot.reseller.line'].create(resell_vals)
         self.sale_id.update({
             'partner_id': self.partner_id.id,
-            'membership_fee_submit':  False,
         })
+        if self.is_membership_fee==True:    
+            self.sale_id.update({
+               'membership_fee_submit':  False,
+            })    
         payments=self.env['account.payment'].search([('order_id','=',self.sale_id.id)])        
         for prd_line in self.sale_id.order_line:
             if prd_line.product_id:

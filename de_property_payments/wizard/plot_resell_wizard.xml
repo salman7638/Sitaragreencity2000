@@ -14,6 +14,7 @@
                       </group>
                       <group>
                           <field name="resell_date" />
+                          <field name="is_membership_fee" />
                           <field name="sale_id"  invisible='1'/>                          
                       </group>                        
                     </group>                   
