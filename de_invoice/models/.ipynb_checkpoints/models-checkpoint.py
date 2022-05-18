@@ -26,7 +26,7 @@ class SaleOrder(models.Model):
             lines_data.append([0,0,{
                 'product_id':adv.product_id.id,
                 'name': str(adv.name),
-                'price_unit': adv.price_subtotal - adv.co_amount or 0.0,
+                'price_unit': self.amount_paid - adv.co_amount - adv.processing_fee - adv.membership_fee or 0.0,
                 'quantity': 1,
                 
             }])
