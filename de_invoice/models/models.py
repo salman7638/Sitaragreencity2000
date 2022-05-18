@@ -6,8 +6,7 @@ from odoo import models, fields, api
 class SaleOrder(models.Model):
     _inherit = "sale.order"
     
-    account_move_id = fields.Many2one('account.move', string='Journal Entry', ondelete='restrict', copy=False, readonly=True)
-    
+    account_move_id = fields.Many2one('account.move', string='Journal Entry', copy=False, readonly=True)
     
     def action_create_plot_invoice(self):
         if not self.partner_id.id:
